@@ -5,6 +5,11 @@ export default{
 
         }
     },
+    methods:{
+        addQuestionnaire(){
+            this.$router.push('BackAdd')
+        }
+    }
 }
 </script>
 
@@ -26,9 +31,15 @@ export default{
                 <button type="button">搜尋</button>            
             </div>
         </div>
+        <!-- icon區域 -->
+        <div class="iconArea">
+            <i class="fa-solid fa-trash-can"></i>
+            <i class="fa-solid fa-plus" @click="addQuestionnaire()"></i>
+        </div>
         <!-- 列表顯示 -->
         <table>
             <tr>
+                <td><input type="checkbox" name="" id=""></td>
                 <th>編號</th>
                 <th>名稱</th>
                 <th>狀態</th>
@@ -43,33 +54,10 @@ export default{
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
         </table>
     </div>
-<!-- 分頁顯示 pagination -->
-    <!-- <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">4</a></li>
-            <li class="page-item"><a class="page-link" href="#">5</a></li>
-            <li class="page-item"><a class="page-link" href="#">6</a></li>
-            <li class="page-item"><a class="page-link" href="#">7</a></li>
-            <li class="page-item"><a class="page-link" href="#">8</a></li>
-            <li class="page-item"><a class="page-link" href="#">9</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav> -->
 </template>
 
 <style lang="scss" scoped>
@@ -79,6 +67,7 @@ export default{
             width: 70vw;
             height: 30vh;
             margin: auto;
+            margin-bottom: 3vmin;
             border-radius: 10px;
             border: 2px solid #9D9D9D;
             box-shadow: 1px 1px 1px lightgray;
@@ -161,6 +150,16 @@ export default{
             }
         }
 
+        .iconArea{
+            margin-left: 30vmin;
+
+            i{
+                color: #9D9D9D;
+                font-size: 24pt;;
+                margin-left: 4vmin;
+            }
+        }
+
         table{
             width: 70vw;
             margin: auto;
@@ -174,16 +173,4 @@ export default{
             }
         }
     }
-
-    // .pagination{
-        
-    //     .page-link{
-    //         background-color: transparent;
-    //         color: dimgray;
-    //         border: none;
-    //         text-decoration: none;
-    //         border-style: none;
-    //         outline: none;
-    //     }
-    // }
 </style>
