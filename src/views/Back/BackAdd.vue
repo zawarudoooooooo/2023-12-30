@@ -8,38 +8,56 @@ import BackNav from '../../components/BackNav.vue';
         },
         components:{
             BackNav
+        },
+        methods:{
+            goTopicPage(){
+                this.$router.push('/BackTopic')
+            },
+            goBackEntryPage(){
+                this.$router.push('/BackEntry')
+            }
         }
     }
 </script>
 
 <template>
     <div class="content">
-        <div class="backNavArea">
 <!-- 導覽與頁籤 -->
+        <div class="backNavArea">
             <BackNav />
         </div>
 
 <!-- 新增問卷內頁 -->
         <div class="addQuestionnaire">
+<!-- 目前位置標示 -->
+            <div class="location">
+                <i class="fa-solid fa-thumbtack"></i>
+                <p>新增問卷</p>
+            </div>
+<!-- 新增問卷名稱 -->
             <div class="addName">
                 <p>問卷名稱 : </p>
                 <input type="text">
             </div>
+<!-- 新增問卷說明 -->
             <div class="addDescription">
                 <p>問卷說明 : </p>
                 <textarea></textarea>
             </div>
+<!-- 新增問卷開始時間 -->
             <div class="addStartTime">
                 <p>開始時間 : </p>
                 <input type="date">
             </div>
+<!-- 新增問卷結束時間 -->
             <div class="addEndTime">
                 <p>結束時間 : </p>
                 <input type="date">
             </div>
+<!-- 按鍵區域 -->
             <div class="addButtonArea">
-                <button type="button">取消</button>
-                <button type="button">下一步</button>
+                <button type="button" @click="goBackEntryPage()">取消</button>
+                <button type="button" @click="goTopicPage()">下一步</button>
             </div>
         </div>
     </div>
@@ -48,23 +66,40 @@ import BackNav from '../../components/BackNav.vue';
 
 <style lang="scss" scoped>
     .content{
-        //border: 1px solid black;
         display: flex;
         margin-top: 10vmin;
-        //justify-content: space-around;
-
+//導覽與頁籤
         .backNavArea{
             margin-left: 40vmin;
             margin-top: 15vmin;
-            //border: 1px solid black;
         }
-
+//新增問卷內頁
         .addQuestionnaire{
         width: 50vw;
         height: 70vh;
         margin: auto;
-        margin-top: 12vmin;
-        //border: 1px black solid;
+        margin-top: 7vmin;
+//目前位置標示
+        .location{
+            width: 45vw;
+            display: flex;
+            color: dimgray;
+            font-weight: bold;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2vmin;
+            
+            i{
+                font-size: 12pt;
+            }
+
+            p{
+                font-size: 18pt;
+                margin: 0;
+
+            }
+            
+        }
 
         p{
             color: dimgray;
@@ -90,37 +125,36 @@ import BackNav from '../../components/BackNav.vue';
             padding-left: 1vmin;
             border: 2px solid #9D9D9D;
         }
-
+//新增問卷名稱
         .addName{
             display: flex;
             margin-bottom: 2vmin;
+            align-items: center;
         }
-
+//新增問卷說明
         .addDescription{
             display: flex;
             margin-bottom: 3vmin;
         }
-
+//新增問卷開始時間
         .addStartTime{
             display: flex;
             margin-bottom: 2vmin;
+            align-items: center;
         }
-
+//新增問卷結束時間
         .addEndTime{
             display: flex;
             margin-bottom: 2vmin;
+            align-items: center;
         }
-
-        .addButtonArea{
-            display: flex;
-        }
-
+//按鍵區域
         .addButtonArea{
             width: 48vw;
             margin-top: 5vmin;
             justify-content: center;
             align-items: center;
-
+            display: flex;
 
             button{
                 width: 5vw;
@@ -143,8 +177,6 @@ import BackNav from '../../components/BackNav.vue';
                 }
             }
         }
+        }
     }
-    }
-
-
 </style>

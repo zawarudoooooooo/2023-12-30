@@ -10,11 +10,6 @@ const router = createRouter({
       component: Entry
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue')
-    },
-    {
       path: '/BackEntry',
       name: 'BackEntry',
       component: () => import('../views/Back/BackEntry.vue')
@@ -28,6 +23,36 @@ const router = createRouter({
       path: '/BackTopic',
       name: 'BackTopic',
       component: () => import('../views/Back/BackTopic.vue')
+    },
+    {
+      path: '/BackFeback',
+      name: 'BackFeback',
+      component: () => import('../views/Back/BackFeback.vue')
+    },
+    {
+      path: '/BackCaculate',
+      name: 'BackCaculate',
+      component: () => import('../views/Back/BackCaculate.vue')
+    },
+    {
+      path: '/BackQuestionCheck',
+      name: 'BackQuestionCheck',
+      component: () => import('../views/Back/BackQuestionCheck.vue')
+    },
+    {
+      path: '/BackAnswerFeback',
+      name: 'BackAnswerFeback',
+      component: () => import('../views/Back/BackAnswerFeback.vue')
+    },
+    {
+      path: '/FrontQuestion',
+      name: 'FrontQuestion',
+      component: () => import('../views/Front/FrontQuestion.vue')
+    },
+    {
+      path: '/FrontQuestionCheck',
+      name: 'FrontQuestionCheck',
+      component: () => import('../views/Front/FrontQuestionCheck.vue')
     },
   ]
 })

@@ -5,19 +5,24 @@ export default{
 
         }
     },
+    methods:{
+        goQuestionPage(){
+            this.$router.push('/FrontQuestion')
+        }
+    }
 }
 </script>
 
 <template>
     <div class="content">
-        <!-- 標題模糊搜尋 -->
+<!-- 標題模糊搜尋 -->
         <div class="searchArea">
-            <!-- 問卷名稱 -->
+<!-- 問卷名稱 -->
             <div class="questionnaire">
                 <p>問卷名稱 : </p>
                 <input type="text">
             </div>
-            <!-- 開始/結束時間 -->
+<!-- 開始/結束時間 -->
             <div class="time">
                 <p>統計時間 : </p>
                 <input type="date">
@@ -26,7 +31,7 @@ export default{
                 <button type="button">搜尋</button>            
             </div>
         </div>
-        <!-- 列表顯示 -->
+<!-- 列表顯示 -->
         <table>
             <tr>
                 <th>編號</th>
@@ -38,7 +43,7 @@ export default{
             </tr>
             <tr>
                 <td></td>
-                <td></td>
+                <td @click="goQuestionPage()">預設顯示頁面</td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -75,6 +80,8 @@ export default{
 <style lang="scss" scoped>
     .content{
         margin-top: 10vmin;
+
+//標題模糊搜尋
         .searchArea{
             width: 70vw;
             height: 30vh;
@@ -86,7 +93,7 @@ export default{
             p{
                 color: dimgray;
             }
-
+//問卷名稱
             .questionnaire{
                 width: 70vw;
                 display: flex;
@@ -97,7 +104,7 @@ export default{
                 
                 input{
                     width: 40vw;
-                    height: 4vh;
+                    height: 4.5vh;
                     outline: none;
                     margin-left: 1vmin;
                     border-radius: 10px;
@@ -106,7 +113,7 @@ export default{
                     margin-bottom: 2vmin;
                 }
             }
-
+//開始 結束時間
             .time{
                 width: 70vw;
                 display: flex;
@@ -115,7 +122,7 @@ export default{
 
                 input{
                     width: 15vw;
-                    height: 4vh;
+                    height: 4.5vh;
                     outline: none;
                     margin-left: 1vmin;
                     margin-right: 2vmin;
@@ -127,7 +134,7 @@ export default{
 
                 #inputdate{
                     width: 15vw;
-                    height: 4vh;
+                    height: 4.5vh;
                     outline: none;
                     margin-left: 2vmin;
                     margin-right: 2vmin;
@@ -160,21 +167,27 @@ export default{
                 }
             }
         }
-
+//列表顯示
         table{
             width: 70vw;
             margin: auto;
             margin-top: 3vmin;
+            text-align: center;
 
             tr{
                 th{
                     color: dimgray;
                     border: 2px solid #9D9D9D;
                 }
+
+                
+                td{
+                        color: dimgray;
+                        border: 2px solid #9D9D9D;
+                    }
             }
         }
     }
-
     // .pagination{
         
     //     .page-link{

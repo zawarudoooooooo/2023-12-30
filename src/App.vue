@@ -42,11 +42,27 @@ export default{
         position: absolute;
         right: 6%;
         margin-top: 3vmin;
+
+        &:hover{
+          color: lightslategray;
+        }
+
+        &:active{
+          color: #9D9D9D;
+        }
       }
 
       #frontIcon{
         position: absolute;
         right: 2%;
+
+        &:hover{
+          color: lightslategray;
+        }
+
+        &:active{
+          color: #9D9D9D;
+        }
       }
     }
     

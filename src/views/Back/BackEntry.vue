@@ -15,14 +15,14 @@ export default{
 
 <template>
     <div class="content">
-        <!-- 標題模糊搜尋 -->
+<!-- 標題模糊搜尋 -->
         <div class="searchArea">
-            <!-- 問卷名稱 -->
+<!-- 問卷名稱 -->
             <div class="questionnaire">
                 <p>問卷名稱 : </p>
                 <input type="text">
             </div>
-            <!-- 開始/結束時間 -->
+<!-- 開始/結束時間 -->
             <div class="time">
                 <p>統計時間 : </p>
                 <input type="date">
@@ -31,15 +31,15 @@ export default{
                 <button type="button">搜尋</button>            
             </div>
         </div>
-        <!-- icon區域 -->
+<!-- icon區域 -->
         <div class="iconArea">
             <i class="fa-solid fa-trash-can"></i>
             <i class="fa-solid fa-plus" @click="addQuestionnaire()"></i>
         </div>
-        <!-- 列表顯示 -->
+<!-- 列表顯示 -->
         <table>
             <tr>
-                <td><input type="checkbox" name="" id=""></td>
+                <th></th>
                 <th>編號</th>
                 <th>名稱</th>
                 <th>狀態</th>
@@ -48,7 +48,7 @@ export default{
                 <th>結果</th>
             </tr>
             <tr>
-                <td></td>
+                <td><input type="checkbox" name="" id=""></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -63,6 +63,7 @@ export default{
 <style lang="scss" scoped>
     .content{
         margin-top: 10vmin;
+//標題模糊搜尋
         .searchArea{
             width: 70vw;
             height: 30vh;
@@ -75,7 +76,7 @@ export default{
             p{
                 color: dimgray;
             }
-
+//問卷名稱
             .questionnaire{
                 width: 70vw;
                 display: flex;
@@ -86,7 +87,7 @@ export default{
                 
                 input{
                     width: 40vw;
-                    height: 4vh;
+                    height: 4.5vh;
                     outline: none;
                     margin-left: 1vmin;
                     border-radius: 10px;
@@ -95,7 +96,7 @@ export default{
                     margin-bottom: 2vmin;
                 }
             }
-
+//開始 結束時間
             .time{
                 width: 70vw;
                 display: flex;
@@ -104,7 +105,7 @@ export default{
 
                 input{
                     width: 15vw;
-                    height: 4vh;
+                    height: 4.5vh;
                     outline: none;
                     margin-left: 1vmin;
                     margin-right: 2vmin;
@@ -116,7 +117,7 @@ export default{
 
                 #inputdate{
                     width: 15vw;
-                    height: 4vh;
+                    height: 4.5vh;
                     outline: none;
                     margin-left: 2vmin;
                     margin-right: 2vmin;
@@ -149,7 +150,7 @@ export default{
                 }
             }
         }
-
+//icon區域
         .iconArea{
             margin-left: 30vmin;
 
@@ -157,16 +158,30 @@ export default{
                 color: #9D9D9D;
                 font-size: 24pt;;
                 margin-left: 4vmin;
+
+                &:hover{
+                    color: lightslategray;
+                }
+
+                &:active{
+                    color: #9D9D9D;
+                }
             }
         }
-
+//列表顯示
         table{
             width: 70vw;
             margin: auto;
             margin-top: 3vmin;
+            text-align: center;
 
             tr{
                 th{
+                    color: dimgray;
+                    border: 2px solid #9D9D9D;
+                }
+                
+                td{
                     color: dimgray;
                     border: 2px solid #9D9D9D;
                 }
