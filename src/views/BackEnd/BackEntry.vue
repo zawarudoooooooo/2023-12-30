@@ -8,6 +8,9 @@ export default{
     methods:{
         addQuestionnaire(){
             this.$router.push('BackAdd')
+        },
+        goBackCaculate(){
+            this.$router.push('')
         }
     }
 }
@@ -24,7 +27,7 @@ export default{
             </div>
 <!-- 開始/結束時間 -->
             <div class="time">
-                <p>統計時間 : </p>
+                <p>開始時間 : </p>
                 <input type="date">
                 <p>到</p>
                 <input type="date" id="inputdate">
@@ -54,7 +57,7 @@ export default{
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td>前往</td>
             </tr>
         </table>
     </div>

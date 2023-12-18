@@ -6,11 +6,11 @@ export default{
         }
     },
     methods:{
-        goEntryPage(){
-            this.$router.push('/')
+        goModifyPage(){
+            this.$router.push('/FrontQuestion')
         },
-        goFrontCheckPage(){
-            this.$router.push('/FrontQuestionCheck')
+        goFrontEntry(){
+            this.$router.push("/")
         }
     }
 }
@@ -18,6 +18,10 @@ export default{
 
 <template>
     <div class="content">
+<!-- 問卷時間 -->
+        <div class="questionnaireTime">
+            <p>2023/12/25-2024/01/01</p>
+        </div>
 <!-- 問卷標題 -->
         <div class="questionnaireTitle">
             <p>Title</p>
@@ -30,19 +34,15 @@ export default{
         <div class="answerInfo">
             <div class="answerName">
                 <p>姓名 : </p>
-                <input type="text">
             </div>
             <div class="answerNumber">
                 <p>手機 : </p>
-                <input type="number">
             </div>
             <div class="answerEmail">
                 <p>E-mail : </p>
-                <input type="text" id="emailinput">
             </div>
             <div class="answerAge">
                 <p>年齡 : </p>
-                <input type="number">
             </div>
         </div>
 <!-- 問卷作答區 -->
@@ -51,8 +51,8 @@ export default{
         </div>
 <!-- 按鍵區域 -->
         <div class="buttonArea">
-            <button type="button" @click="goEntryPage()">取消</button>
-            <button type="button" @click="goFrontCheckPage()">送出</button>
+            <button type="button" @click="goModifyPage()">修改</button>
+            <button type="button" @click="goFrontEntry()">送出</button>
         </div>
     </div>
 </template>
@@ -68,9 +68,17 @@ export default{
             color: dimgray;
             text-align: center;
         }
+//問卷時間
+        .questionnaireTime{
+            font-size: 14pt;
+            position: absolute;
+            right: 23vmin;
+            top: 13vmin;
+        }   
 //問卷標題
         .questionnaireTitle{
             font-size: 36pt;
+            margin-top: 5vmin;
         }
 //問卷說明
         .questionnaireDescription{
@@ -87,29 +95,6 @@ export default{
             margin: auto;
             margin-bottom: 2vmin;
             //border: 1px solid black;
-
-            input{
-                width: 60vw;
-                height: 4.5vh;
-                outline: none;
-                margin-left: 1vmin;
-                border-radius: 10px;
-                padding-left: 1vmin;
-                border: 2px solid #9D9D9D;
-                margin-bottom: 2vmin;
-            }
-
-            #emailinput{
-                width: 60vw;
-                height: 4.5vh;
-                outline: none;
-                margin-left: 1vmin;
-                border-radius: 10px;
-                padding-left: 1vmin;
-                border: 2px solid #9D9D9D;
-                margin-bottom: 2vmin;
-                margin-right: 2vmin;
-            }
 
             p{
                 font-size: 12pt;

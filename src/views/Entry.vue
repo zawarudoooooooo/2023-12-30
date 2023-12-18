@@ -8,6 +8,9 @@ export default{
     methods:{
         goQuestionPage(){
             this.$router.push('/FrontQuestion')
+        },
+        goFrontCaculate(){
+            this.$router.push('/FrontCaculate')
         }
     }
 }
@@ -24,7 +27,7 @@ export default{
             </div>
 <!-- 開始/結束時間 -->
             <div class="time">
-                <p>統計時間 : </p>
+                <p>開始時間 : </p>
                 <input type="date">
                 <p>到</p>
                 <input type="date" id="inputdate">
@@ -47,7 +50,7 @@ export default{
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                <td @click="goFrontCaculate()">預設統計頁面</td>
             </tr>
         </table>
     </div>

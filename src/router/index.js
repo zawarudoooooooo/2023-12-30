@@ -12,47 +12,52 @@ const router = createRouter({
     {
       path: '/BackEntry',
       name: 'BackEntry',
-      component: () => import('../views/Back/BackEntry.vue')
+      component: () => import('../views/BackEnd/BackEntry.vue')
     },
     {
       path: '/BackAdd',
       name: 'BackAdd',
-      component: () => import('../views/Back/BackAdd.vue')
+      component: () => import('../views/BackEnd/BackAdd.vue')
     },
     {
       path: '/BackTopic',
       name: 'BackTopic',
-      component: () => import('../views/Back/BackTopic.vue')
+      component: () => import('../views/BackEnd/BackTopic.vue')
     },
     {
       path: '/BackFeback',
       name: 'BackFeback',
-      component: () => import('../views/Back/BackFeback.vue')
+      component: () => import('../views/BackEnd/BackFeback.vue')
     },
     {
       path: '/BackCaculate',
       name: 'BackCaculate',
-      component: () => import('../views/Back/BackCaculate.vue')
+      component: () => import('../views/BackEnd/BackCaculate.vue')
     },
     {
       path: '/BackQuestionCheck',
       name: 'BackQuestionCheck',
-      component: () => import('../views/Back/BackQuestionCheck.vue')
+      component: () => import('../views/BackEnd/BackQuestionCheck.vue')
     },
     {
       path: '/BackAnswerFeback',
       name: 'BackAnswerFeback',
-      component: () => import('../views/Back/BackAnswerFeback.vue')
+      component: () => import('../views/BackEnd/BackAnswerFeback.vue')
     },
     {
       path: '/FrontQuestion',
       name: 'FrontQuestion',
-      component: () => import('../views/Front/FrontQuestion.vue')
+      component: () => import('../views/FrontEnd/FrontQuestion.vue')
     },
     {
       path: '/FrontQuestionCheck',
       name: 'FrontQuestionCheck',
-      component: () => import('../views/Front/FrontQuestionCheck.vue')
+      component: () => import('../views/FrontEnd/FrontQuestionCheck.vue')
+    },
+    {
+      path: '/FrontCaculate',
+      name: 'FrontCaculate',
+      component: () => import('../views/FrontEnd/FrontCaculate.vue')
     },
   ]
 })

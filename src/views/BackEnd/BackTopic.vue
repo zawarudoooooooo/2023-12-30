@@ -43,6 +43,7 @@ import BackNav from '../../components/BackNav.vue';
                     <select name="" id="">
                         <option>單選題</option>
                         <option>複選題</option>
+                        <option>簡答題</option>
                     </select>
                     <input type="checkbox" id="checkinput">
                     <label for="">必填</label>
@@ -70,7 +71,7 @@ import BackNav from '../../components/BackNav.vue';
                 <tr>
                     <th></th>
                     <th>編號</th>
-                    <th>內容</th>
+                    <th>問題</th>
                     <th>問題種類</th>
                     <th>必填</th>
                     <th>編輯</th>
@@ -158,14 +159,15 @@ import BackNav from '../../components/BackNav.vue';
                 margin-left: 4vmin;
 
                     select{
-                    width: 5vw;
+                    width: 6vw;
                     border-radius: 5px;
                     color: dimgray;
                     outline: none;
                     margin-right: 2vmin;
 
                         option{
-                        color: dimgray;
+                            color: dimgray;
+                            text-align: center;
                         }
                     } 
 
