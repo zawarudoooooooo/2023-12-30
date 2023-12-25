@@ -3,6 +3,7 @@ export default{
     data(){
         return{
 
+
         }
     },
     methods:{
@@ -11,7 +12,7 @@ export default{
         },
         goFrontCaculate(){
             this.$router.push('/FrontCaculate')
-        }
+        },
     }
 }
 </script>

@@ -22,11 +22,6 @@ export default{
     <i class="fa-solid fa-users-gear" @click="goBackEntry()"></i>
     <i class="fa-solid fa-share" id="frontIcon" @click="goFrontEntry()"></i>
   </div>
-      
-      <!-- <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav> -->
   <RouterView />
 </template>
 
@@ -65,6 +60,4 @@ export default{
         }
       }
     }
-    
-
 </style>

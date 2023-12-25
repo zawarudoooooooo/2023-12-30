@@ -27,9 +27,9 @@
         <div class="questionnaire">
             <button type="button" @click="goAddPage()"><i class="fa-solid fa-clipboard-list"></i>問卷</button>
         </div>
-        <div class="topic">
+        <!-- <div class="topic">
             <button type="button" @click="goTopicPage()"><i class="fa-solid fa-list-check"></i>題目</button>
-        </div>
+        </div> -->
         <div class="feeback">
             <button type="button" @click="goFebackPage()"> <i class="fa-solid fa-comments"></i>問卷回饋</button>
         </div>

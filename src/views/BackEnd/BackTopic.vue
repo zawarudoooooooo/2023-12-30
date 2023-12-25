@@ -3,20 +3,40 @@ import BackNav from '../../components/BackNav.vue';
     export default{
         data(){
             return{
-
+                //questionArr:[],
+                questionType:["radio","checkbox","text"],
+                hwquestionList:[],
+                necessary:"",
+                options:[],
+                questionText:"",
+                questionArr:JSON.parse(localStorage.getItem("this.questionArr")) || [],
             }
         },
-        components:{
-            BackNav
-        },
         methods:{
+            addQuestion(){
+                const newQuestion={
+                    questionType:"",
+                    questionText:"",
+                    optionText:"",
+                    necessary:"",
+
+                    question:[],
+                    options:[],
+                }
+                this.questionArr.push(newQuestion);
+                this.hwquestionList.push(newQuestion);
+                console.log(newQuestion)
+            },
             goAddPage(){
                 this.$router.push('/BackAdd')
             },
             goQuestiionCheck(){
                 this.$router.push('/BackQuestionCheck')
             }
-        }
+        },
+        components:{
+            BackNav
+        },
     }
 </script>
 
@@ -57,7 +77,7 @@ import BackNav from '../../components/BackNav.vue';
                 </div>
                 <div class="submitArea">
                     <textarea></textarea>
-                    <button type="button">加入</button>
+                    <button type="button" @click="addQuestion">加入</button>
                 </div>
             </div>
 
@@ -77,7 +97,7 @@ import BackNav from '../../components/BackNav.vue';
                     <th>編輯</th>
                 </tr>
                 <tr>
-                    <td><input type="checkbox" name="" id=""></td>
+                    <td><input type="checkbox" name="" id="tableinput"></td>
                     <td></td>
                     <td></td>
                     <td></td>
