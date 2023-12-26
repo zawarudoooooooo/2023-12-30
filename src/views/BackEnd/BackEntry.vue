@@ -6,11 +6,14 @@ export default{
         }
     },
     methods:{
-        addQuestionnaire(){
+        addQuiz(){
             this.$router.push('BackAdd')
         },
+        goFebackPage(){
+            this.$router.push('/BackFeback')
+        },
         goBackCaculate(){
-            this.$router.push('')
+            this.$router.push('/BackCaculate')
         }
     }
 }
@@ -37,7 +40,9 @@ export default{
 <!-- icon區域 -->
         <div class="iconArea">
             <i class="fa-solid fa-trash-can"></i>
-            <i class="fa-solid fa-plus" @click="addQuestionnaire()"></i>
+            <i class="fa-solid fa-plus" @click="addQuiz()"></i>
+            <i class="fa-solid fa-comments" @click="goBackCaculate()"></i>
+            <i class="fa-solid fa-chart-simple" @click="goFebackPage()"></i>
         </div>
 <!-- 列表顯示 -->
         <table>

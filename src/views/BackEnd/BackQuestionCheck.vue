@@ -2,7 +2,11 @@
 export default{
     data(){
         return{
+            //問卷標題
+            quizArr:JSON.parse(localStorage.getItem("this.quizArr")) || [],
 
+            //問卷題目
+            questionArr:JSON.parse(localStorage.getItem("this.qustionArr")) || [],
         }
     },
     methods:{
@@ -14,7 +18,7 @@ export default{
     <div class="content">
 <!-- 問卷標題 -->
         <div class="questionnaireTitle">
-            <p>Title</p>
+            <p></p>
         </div>
 <!-- 問卷說明 -->
         <div class="questionnaireDescription">

@@ -20,11 +20,6 @@ const router = createRouter({
       component: () => import('../views/BackEnd/BackAdd.vue')
     },
     {
-      path: '/BackTopic',
-      name: 'BackTopic',
-      component: () => import('../views/BackEnd/BackTopic.vue')
-    },
-    {
       path: '/BackFeback',
       name: 'BackFeback',
       component: () => import('../views/BackEnd/BackFeback.vue')

@@ -1,5 +1,4 @@
 <script>
-import BackNav from '../../components/BackNav.vue';
     export default{
         data(){
             return{
@@ -7,17 +6,12 @@ import BackNav from '../../components/BackNav.vue';
             }
         },
         components:{
-            BackNav
         },
     }
 </script>
 
 <template>
     <div class="content">
-<!-- 導覽與頁籤 -->
-        <div class="backNavArea">
-            <BackNav />
-        </div>
 <!-- 統計結果顯示區域 -->
         <div class="caculateShow">
 <!-- 目前位置標示 -->
@@ -31,18 +25,11 @@ import BackNav from '../../components/BackNav.vue';
 
 <style lang="scss" scoped>
     .content{
+        width: 100vw;
         display: flex;
-        margin-top: 10vmin;
-//導覽與頁籤
-        .backNavArea{
-            margin-left: 40vmin;
-            margin-top: 15vmin;
-        }
+        justify-content: center;
 //統計結果顯示區域
         .caculateShow{
-            width: 50vw;
-            height: 70vh;
-            margin: auto;
             margin-top: 7vmin;
 //目前位置標示
             .location{
