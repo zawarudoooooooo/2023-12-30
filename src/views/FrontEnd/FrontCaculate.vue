@@ -1,9 +1,30 @@
 <script>
+import axios from 'axios';
 export default{
     data(){
         return{
+            arr:[],
 
         }
+    },
+    mounted(){
+        // axios({
+        //             url:'http://localhost:8080/quiz/',
+        //             method:'POST',
+        //             headers:{
+        //                 "Content-Type" : "application/json"
+        //             },
+        //             data:{
+        //                 quiz_name:"",
+        //                 start_date: "",
+        //                 end_date:"",
+        //             },
+        //         }).then(res=>{
+        //             res.data.quizList.forEach(element => {
+        //                 this.arr.push({name:element.name,description:element.description,startDate:element.startDate,endDate:element.endDate,is_published:element.published,question:element.questionStr,num:element.num})
+        //             });
+        //         })
+        //         console.log(this.arr)
     },
     methods:{
         goEntryPage(){
@@ -16,11 +37,11 @@ export default{
 <template>
         <div class="content">
 <!-- 問卷時間 -->
-        <div class="questionnaireTime">
+        <div class="questionTime">
             <p>2023/12/25-2024/01/01</p>
         </div>
 <!-- 問卷標題 -->
-        <div class="questionnaireTitle">
+        <div class="questionTitle">
             <p>Title</p>
         </div>
 <!-- 統計顯示區 -->
@@ -49,14 +70,14 @@ export default{
             text-align: center;
         }
 //問卷時間
-        .questionnaireTime{
+        .questionTime{
             font-size: 14pt;
             position: absolute;
             right: 2vmin;
             top: 1vmin;
         }        
 //問卷標題
-        .questionnaireTitle{
+        .questionTitle{
             font-size: 36pt;
             margin-top: 2vmin;
         }

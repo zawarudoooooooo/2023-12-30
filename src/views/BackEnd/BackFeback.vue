@@ -8,8 +8,11 @@
         components:{
         },
         methods:{
-            goAnswerFebackPage(){
+            goAnswerFeback(){
                 this.$router.push('BackAnswerFeback')
+            },
+            goBackEntry(){
+                this.$router.push('/BackEntry')
             }
         }
     }
@@ -36,10 +39,12 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td @click="goAnswerFebackPage()">前往</td>
+                    <td @click="goAnswerFeback()">前往</td>
                 </tr>
             </table>
+            <button type="button" @click="goBackEntry()">取消</button>
         </div>
+        
     </div>
 </template>
 
@@ -89,5 +94,24 @@
                 }
             }
         }
+
+        button{
+                    width: 9vw;
+                    height: 4vh;
+                    color: dimgray;
+                    //margin-left: 2vmin;
+                    border-style: none;
+                    border-radius: 5px;
+                    background-color: #F8F0DF;
+                    box-shadow: 1px 1px 1px lightgray;
+                    &:hover{
+                        color: #F8F0DF;
+                        background-color: #9D9D9D;
+                    }
+                    &:active{
+                        color: dimgray;
+                        background-color: #F8F0DF;
+                    }
+            }
     }
 </style>

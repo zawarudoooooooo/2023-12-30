@@ -1,19 +1,144 @@
 <script>
+import axios from 'axios';
 export default{
     data(){
         return{
+            searchStartDate:"",
+            searchEndDate:"",
+            searchText:"",
+            arr:[],
 
-
+            //分頁
+            dataPages:[],
+            dataArr:[],
+            currentIndex:1,
         }
     },
+    mounted(){
+        axios({
+                    url:'http://localhost:8080/quiz/search',
+                    method:'POST',
+                    headers:{
+                        "Content-Type" : "application/json"
+                    },
+                    data:{
+                        quiz_name:"",
+                        start_date: "",
+                        end_date:"",
+                    },
+                }).then(res=>{
+                    res.data.quizList.forEach(element => {
+                        this.arr.push({name:element.name,description:element.description,startDate:element.startDate,endDate:element.endDate,is_published:element.published,question:element.questionStr,num:element.num})
+                    });
+                })
+                console.log(this.arr)
+    },
+    created(){
+        this.pagination(this.arr, 1)
+
+    },
     methods:{
+        search(){
+            axios({
+                    url:'http://localhost:8080/quiz/search',
+                    method:'POST',
+                    headers:{
+                        "Content-Type" : "application/json"
+                    },
+                    data:{
+                        quiz_name:"",
+                        start_date: "",
+                        end_date:"",
+                    },
+                }).then(res=>console.log(res))
+
+        },
+        getStatus(startTime, endTime) {
+            const now = new Date();
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+
+            if (now < startDate) {
+                return '尚未開始';
+            } else if (now >= startDate && now <= endDate) {
+                return '進行中';
+            } else {
+                return '已結束';
+            }
+        },
+        getStatusColor(startTime, endTime) {
+            const status = this.getStatus(startTime, endTime);
+
+            if (status === '尚未開始') {
+                return 'orange'; // 设置尚未开始状态的文字颜色为橙色
+            } else if (status === '進行中') {
+                return 'green'; // 设置进行中状态的文字颜色为绿色
+            } else if (status === '已結束') {
+                return 'red'; // 设置已结束状态的文字颜色为红色
+            } else {
+                return 'black'; // 默认颜色为黑色
+            }
+        },
+        isLinkEnabled(startTime, endTime) {
+            const now = new Date();
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+            const status = this.getStatus(startTime, endTime);
+
+            if (status === '尚未開始' || (status === '已結束' && now < endDate)) {
+                return false;
+            } else {
+                return true;
+            }
+        },
+        isLinkEnabledForDoPage(startTime, endTime) {
+            const now = new Date();
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+            const status = this.getStatus(startTime, endTime);
+
+            if (status === '尚未開始' || status === '已結束') {
+                return false;
+            }
+            else {
+                return true;
+            }
+        },
         goQuestionPage(){
             this.$router.push('/FrontQuestion')
         },
         goFrontCaculate(){
             this.$router.push('/FrontCaculate')
         },
-    }
+        pagination(data,nowPage){
+            const dataTotal = data.length;
+            const pageData = 10;
+
+            this.dataPages = [];
+            const pageTotal = Math.ceil(dataTotal/pageData);
+            for(let i = 1; i<=pageTotal ; i++){
+                this.dataPages.push(i)
+            }
+            console.log(this.dataPages)
+            console.log(`全部資料:${dataTotal} 每一頁顯示:${pageData}筆 總頁數:${pageTotal}`)
+
+            let currentPage = nowPage;
+
+            if(currentPage>pageTotal){
+                currentPage = pageTotal;
+            }
+
+            const minData = (currentPage * pageData) - pageData;
+            const maxData = (currentPage * pageData);
+
+            this.dataArr = this.arr.slice(minData, maxData)
+
+        },
+        changePages(nowPage){
+            this.pagination(this.arr, nowPage)
+            this.currentPage = nowPage
+        },
+    },
 }
 </script>
 
@@ -24,15 +149,15 @@ export default{
 <!-- 問卷名稱 -->
             <div class="questionnaire">
                 <p>問卷名稱 : </p>
-                <input type="text">
+                <input type="text" v-model="this.searchText">
             </div>
 <!-- 開始/結束時間 -->
             <div class="time">
                 <p>開始時間 : </p>
-                <input type="date">
+                <input type="date" v-model="this.searchStartDate">
                 <p>到</p>
-                <input type="date" id="inputdate">
-                <button type="button">搜尋</button>            
+                <input type="date" id="inputdate" v-model="this.searchEndDate">
+                <button type="button" @click="search()">搜尋</button>            
             </div>
         </div>
 <!-- 列表顯示 -->
@@ -45,40 +170,20 @@ export default{
                 <th>結束時間</th>
                 <th>結果</th>
             </tr>
-            <tr>
-                <td></td>
-                <td @click="goQuestionPage()">預設顯示頁面</td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr v-for="(item,index) in this.arr">
+                <td>{{index+1}}</td>
+                <td>{{ item.name }}</td>
+                <td>
+                    <span :style="{ color: getStatusColor(item.startDate, item.endDate) }">
+                                {{ getStatus(item.startDate, item.endDate) }}
+                    </span>
+                </td>
+                <td>{{ item.startDate }}</td>
+                <td>{{ item.endDate }}</td>
                 <td @click="goFrontCaculate()">預設統計頁面</td>
             </tr>
         </table>
     </div>
-<!-- 分頁顯示 pagination -->
-    <!-- <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">4</a></li>
-            <li class="page-item"><a class="page-link" href="#">5</a></li>
-            <li class="page-item"><a class="page-link" href="#">6</a></li>
-            <li class="page-item"><a class="page-link" href="#">7</a></li>
-            <li class="page-item"><a class="page-link" href="#">8</a></li>
-            <li class="page-item"><a class="page-link" href="#">9</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav> -->
 </template>
 
 <style lang="scss" scoped>
@@ -192,15 +297,4 @@ export default{
             }
         }
     }
-    // .pagination{
-        
-    //     .page-link{
-    //         background-color: transparent;
-    //         color: dimgray;
-    //         border: none;
-    //         text-decoration: none;
-    //         border-style: none;
-    //         outline: none;
-    //     }
-    // }
 </style>

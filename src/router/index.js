@@ -10,6 +10,11 @@ const router = createRouter({
       component: Entry
     },
     {
+      path: '/Login',
+      name: 'Login',
+      component: () => import('../views/Login.vue')
+    },
+    {
       path: '/BackEntry',
       name: 'BackEntry',
       component: () => import('../views/BackEnd/BackEntry.vue')

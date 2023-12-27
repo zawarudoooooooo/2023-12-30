@@ -1,4 +1,5 @@
 <script>
+import swal from 'sweetalert';
 import { RouterLink, RouterView } from 'vue-router'
 export default{
     data(){
@@ -7,19 +8,23 @@ export default{
         }
     },
     methods:{
-        goBackEntry(){
-            this.$router.push('BackEntry')
-        },
         goFrontEntry(){
           this.$router.push('/')
-        }
+        },
+        goLogin(){
+          this.$router.push('/Login')
+        },
+        login(){
+            swal("權限不足", "請先登錄", "error");
+            this.goLogin();
+        },
     }
 }
 </script>
 
 <template>
   <div class="userChange">
-    <i class="fa-solid fa-users-gear" @click="goBackEntry()"></i>
+    <i class="fa-solid fa-users-gear" @click="login()"></i>
     <i class="fa-solid fa-share" id="frontIcon" @click="goFrontEntry()"></i>
   </div>
   <RouterView />

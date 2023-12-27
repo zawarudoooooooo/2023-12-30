@@ -16,7 +16,7 @@ import axios from 'axios';
                 questionType:"",
                 necessary:false,
                 questionAnswer:[],
-                questionArr:JSON.parse(localStorage.getItem("this.qustionArr")) || [],
+                questionArr: JSON.parse(localStorage.getItem("this.questionArr")) || [],
                 // questionPage:false,
 
             //check
@@ -47,39 +47,6 @@ import axios from 'axios';
                     return;
                 }
                 this.addQuestionPage=true;
-
-                
-
-                // let quizObj = {
-                //     name : this.name,
-                //     description : this.description,
-                //     start_date : this.start_date,
-                //     end_date : this.end_date,
-                //     questions : [],
-                //     is_published: 0,
-                // }
-
-                // this.quizArr.push(quizObj);
-                // console.log(quizObj);
-                // localStorage.setItem("quizArr", JSON.stringify((this.quizArr)));
-
-                // this.addQuestionPage=true;
-
-                // axios({
-                //     url:'http://localhost:8080/quiz/create',
-                //     method:'POST',
-                //     headers:{
-                //         "Content-Type" : "application/json"
-                //     },
-                //     data:{
-                //         name : this.name,
-                //         description : this.description,
-                //         start_date : this.start_date,
-                //         end_date : this.end_date,
-                //         questions : [],
-                //         is_published: 0,
-                //     },
-                // }).then(res=>console.log(res))
             },
 //新增question(問卷選項)
             addQuestion(){
@@ -104,24 +71,8 @@ import axios from 'axios';
                 this.questionTitle="";
                 this.questionAnswer="";
                 this.questionPage=false;
-                //this.navShow=false;
-                //this.checkPage=true;
+                console.log(this.questionArr);
 
-                // axios({
-                //     url:'http://localhost:8080/quiz/update',
-                //     method:'POST',
-                //     headers:{
-                //         "Content-Type" : "application/json"
-                //     },
-                //     data:{
-                //         name : this.name,
-                //         description : this.description,
-                //         start_date : this.start_date,
-                //         end_date : this.end_date,
-                //         questions : [],
-                //         is_published: 0,
-                //     },
-                // }).then(res=>console.log(res))
             },
 //儲存問卷未發布
             saveAndUnpublished(){
@@ -132,7 +83,7 @@ import axios from 'axios';
                     description : this.description,
                     start_date : this.start_date,
                     end_date : this.end_date,
-                    questions : this.questionAnswer,
+                    questions : this.questionArr,
                     is_published: 0,
                 }
 
@@ -153,7 +104,7 @@ import axios from 'axios';
                         description : this.description,
                         start_date : this.start_date,
                         end_date : this.end_date,
-                        questions : this.questionAnswer,
+                        questions : this.questionArr,
                         is_published: 0,
                     },
                 }).then(res=>console.log(res))
@@ -237,7 +188,16 @@ import axios from 'axios';
                 this.$router.push('/BackTopic')
             },
             closeAddQuestionPage(){
-                this.addQuestionPage=false
+                this.addQuestionPage=false;
+            },
+            goCheckPage(){
+                this.checkPage=true;
+                this.quizPage=false;
+            },
+            closeCheckPage(){
+                this.checkPage=false;
+                this.quizPage=true;
+
             },
         },
         components:{
@@ -257,7 +217,7 @@ import axios from 'axios';
             <!-- 新增問卷名稱 -->
             <div class="addTitle">
                 <p>問卷名稱 : </p>
-                <input type="text" v-model="this.name" placeholder="請輸入問卷標題">
+                <input type="text" v-model="this.name" placeholder="請輸入問卷標題" id="input">
             </div>
             <!-- 新增問卷說明 -->
             <div class="addDescription">
@@ -299,7 +259,7 @@ import axios from 'axios';
                             <option value="多選題">多選題</option>
                             <option value="簡答題">簡答題</option>
                         </select>
-                        <input type="checkbox" id="checkinput" value="true" v-model="this.necessary">
+                        <input type="checkbox" id="checkinput" value="true" v-model="this.necessary" name="necessary">
                         <label for="">必填</label>
                     </div>
                 </div>
@@ -323,20 +283,22 @@ import axios from 'axios';
                     <th>問題</th>
                     <th>問題種類</th>
                     <th>必填</th>
-                    <th>編輯</th>
+                    <th>選項</th>
                     <th>刪除</th>
                 </tr>
                 <tr v-for="(question,questionIndex) in questionArr" :key="questionIndex" >
                     <td>{{questionIndex+1}}</td>
                     <td>{{ question.title }}</td>
                     <td>{{ question.type }}</td>
-                    <td><input type="checkbox" id="tdinput" v-model="question.necessary"></td>
-                    <td><i class="fa-solid fa-pen"></i></td>
+                    <td><input type="checkbox" id="tdinput" v-model="question.is_necessary" name="" disabled ></td>
+                    <td>{{ question.option }}</td>
                     <td><i class="fa-solid fa-trash-can" @cilck="confirmDelete()" :key="questionIndex"></i></td>
                 </tr>
             </table>
             <!-- 按鍵區域 -->
             <div class="questionButtonArea">
+                <button type="button" @click="goBackEntryPage()">取消</button>
+                <button type="button" @click="goCheckPage()">預覽</button>
                 <button type="button" @click="saveAndUnpublished()">僅儲存</button>
                 <button type="button" @click="saveAndPublished()">儲存並發布</button>
             </div>
@@ -362,38 +324,66 @@ import axios from 'axios';
             <div class="answerInfo">
                 <div class="answerName">
                     <p>姓名 : </p>
-                    <input type="text">
+                    <input type="text" disabled>
                 </div>
                 <div class="answerNumber">
                     <p>手機 : </p>
-                    <input type="number">
+                    <input type="number" disabled>
                 </div>
                 <div class="answerEmail">
                     <p>E-mail : </p>
-                    <input type="text" id="emailinput">
+                    <input type="text" id="emailinput" disabled>
                 </div>
                 <div class="answerAge">
                     <p>年齡 : </p>
-                    <input type="number">
+                    <input type="number" disabled>
                 </div>
             </div>
             <!-- 問卷作答區 -->
             <div class="questionnaire" v-for="(question,questionIndex) in questionArr" :key="questionIndex">
-                <span>{{questionIndex+1}}</span>
-                <span>{{ question.title }}</span>
-                <span>{{ question.necessary }}</span>
+                <span>{{questionIndex+1}}.{{ question.title }}</span>
+                <span>* 是否必填 : {{ question.is_necessary }}</span>
 
                 <p>{{ question.type }}</p>
+                <div class="answer" v-for="op in question.option">
+                    <input type="checkbox" name="" id="" v-if="question.type=='單選題'">
+                    <input type="radio" name="" id="" v-if="question.type=='多選題'">
+                    <input type="textarea" name="" id="" v-if="question.type=='簡答題'">
+                    <span>{{ op }}</span>
+
+                </div>
+
+                
                 
                 <!-- <p>{{ question.option }}</p> -->
-                <p><input type="checkbox">{{ question.option }}</p>
+                <!-- <p><input type="checkbox">{{ question.option }}</p>
+                <p><input type="radio">{{ question.option }}</p>
+                <p><input type="textarea">{{ question.option }}</p> -->
+
+                <!-- <div class="inputOptions" v-if="question.option === 'radio'">
+                        <div v-for="(option, optionIndex) in question.optionText.split(';')" :key="optionIndex">
+                            <input type="radio" :id="'q_' + index + '_o_' + optionIndex" :value="option"
+                                :name="'question_' + index" v-model="doquestArr[question.questionId]">
+                            <label :for="'q_' + index + '_o_' + optionIndex">{{ question.option }}</label>
+                        </div>
+                    </div>
+                    <div class="inputOptions" v-else-if="question.questionType === 'checkbox'">
+                        <div v-for="(option, optionIndex) in question.optionText.split(';')" :key="optionIndex">
+                            <input type="checkbox" :id="'q_' + index + '_o_' + optionIndex" :value="option"
+                                v-model="doquestArr[question.questionId + '_' + optionIndex]">
+                            <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
+                        </div>
+                    </div>
+                    <div class="inputOptions" v-else-if="question.questionType === 'text'">
+                        <input type="text" v-model="doquestArr[question.questionId]" :id="'q_' + index">
+                    </div> -->
 
 
             </div>
             <!-- 按鍵區域 -->
             <div class="checkButtonArea">
-                <button type="button">僅儲存</button>
-                <button type="button">儲存並發布</button>
+                <button type="button" @click="closeCheckPage()">返回</button>
+                <button type="button">編輯</button>
             </div>
         </div>
 
@@ -552,9 +542,9 @@ import axios from 'axios';
             }
             //按鍵區域
             .questionButtonArea{
-                width: 48vw;
+                width: 45vw;
                 margin-top: 5vmin;
-                justify-content: center;
+                justify-content: space-around;
                 align-items: center;
                 display: flex;
 
@@ -581,7 +571,7 @@ import axios from 'axios';
 
             //新增問卷名稱
             .addQuestion{
-                width: 50vw;
+                width: 47vw;
                 height: 40vh;
                 margin: auto;
                 margin-top: 4vmin;
@@ -594,7 +584,7 @@ import axios from 'axios';
                     color: dimgray;
                     position: absolute;
                     font-size: 15pt;
-                    right: 3%;
+                    right: 1%;
                     top: 2%;
                 }
                 p{

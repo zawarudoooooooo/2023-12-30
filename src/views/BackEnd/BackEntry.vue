@@ -1,15 +1,91 @@
 <script>
+import axios from 'axios';
 export default{
     data(){
         return{
+            arr:[],
 
         }
     },
+    mounted(){
+        axios({
+                url:'http://localhost:8080/quiz/getAll',
+                method:'GET',
+                headers:{
+                    "Content-Type" : "application/json"
+                },
+                data:{
+                    num: "",
+                    name: "",
+                    description: "",
+                    startDate: "",
+                    endDate: "",
+                    questionStr: "",
+                    published: ""
+                },
+            }).then(res=>{
+                res.data.quizList.forEach(element => {
+                    this.arr.push({name:element.name,description:element.description,startDate:element.startDate,endDate:element.endDate,is_published:element.published,question:element.questionStr,num:element.num})
+                });
+            })
+            console.log(this.arr)
+    },
     methods:{
+        getStatus(startTime, endTime) {
+            const now = new Date();
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+
+            if (now < startDate) {
+                return '尚未開始';
+            } else if (now >= startDate && now <= endDate) {
+                return '進行中';
+            } else {
+                return '已結束';
+            }
+        },
+        getStatusColor(startTime, endTime) {
+            const status = this.getStatus(startTime, endTime);
+
+            if (status === '尚未開始') {
+                return 'orange'; // 设置尚未开始状态的文字颜色为橙色
+            } else if (status === '進行中') {
+                return 'green'; // 设置进行中状态的文字颜色为绿色
+            } else if (status === '已結束') {
+                return 'red'; // 设置已结束状态的文字颜色为红色
+            } else {
+                return 'black'; // 默认颜色为黑色
+            }
+        },
+        isLinkEnabled(startTime, endTime) {
+            const now = new Date();
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+            const status = this.getStatus(startTime, endTime);
+
+            if (status === '尚未開始' || (status === '已結束' && now < endDate)) {
+                return false;
+            } else {
+                return true;
+            }
+        },
+        isLinkEnabledForDoPage(startTime, endTime) {
+            const now = new Date();
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+            const status = this.getStatus(startTime, endTime);
+
+            if (status === '尚未開始' || status === '已結束') {
+                return false;
+            }
+            else {
+                return true;
+            }
+        },
         addQuiz(){
             this.$router.push('BackAdd')
         },
-        goFebackPage(){
+        goFeback(){
             this.$router.push('/BackFeback')
         },
         goBackCaculate(){
@@ -39,30 +115,33 @@ export default{
         </div>
 <!-- icon區域 -->
         <div class="iconArea">
-            <i class="fa-solid fa-trash-can"></i>
             <i class="fa-solid fa-plus" @click="addQuiz()"></i>
-            <i class="fa-solid fa-comments" @click="goBackCaculate()"></i>
-            <i class="fa-solid fa-chart-simple" @click="goFebackPage()"></i>
+            <i class="fa-solid fa-comments" @click="goFeback()"></i>
+            <i class="fa-solid fa-chart-simple" @click="goBackCaculate()"></i>
         </div>
 <!-- 列表顯示 -->
         <table>
             <tr>
-                <th></th>
                 <th>編號</th>
                 <th>名稱</th>
                 <th>狀態</th>
                 <th>開始時間</th>
                 <th>結束時間</th>
                 <th>結果</th>
+                <th>刪除</th>
             </tr>
-            <tr>
-                <td><input type="checkbox" name="" id=""></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr v-for="(item,index) in this.arr">
+                <td>{{index+1}}</td>
+                <td>{{ item.name }}</td>
+                <td>
+                    <span :style="{ color: getStatusColor(item.startDate, item.endDate) }">
+                                {{ getStatus(item.startDate, item.endDate) }}
+                    </span>
+                </td>
+                <td>{{ item.startDate }}</td>
+                <td>{{ item.endDate }}</td>
                 <td>前往</td>
+                <td><i class="fa-solid fa-trash-can"></i></td>
             </tr>
         </table>
     </div>
