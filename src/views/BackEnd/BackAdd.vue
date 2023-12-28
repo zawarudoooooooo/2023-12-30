@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios';
+import swal from 'sweetalert';
     export default{
         data(){
             return{
@@ -8,7 +9,6 @@ import axios from 'axios';
                 description:"",
                 start_date:"",
                 end_date:"",
-                quizArr:JSON.parse(localStorage.getItem("this.quizArr")) || [],
                 quizPage:true,
 
             //question
@@ -16,19 +16,11 @@ import axios from 'axios';
                 questionType:"",
                 necessary:false,
                 questionAnswer:[],
-                questionArr: JSON.parse(localStorage.getItem("this.questionArr")) || [],
-                // questionPage:false,
+                question_list:[],
 
             //check
                 checkPage:false,
-
-            //nav
-                navShow:true,
-
                 addQuestionPage:false,
-
-                key:"",
-                deleIndex:null,
             }
         },
         methods:{
@@ -36,14 +28,14 @@ import axios from 'axios';
             addQuiz(){
             //檢查欄位是否為空白
                 if(this.name==""||this.description==""||this.start_date==""||this.end_date==""){
-                    alert("欄位不得為空，請再次檢查")
+                    swal("欄位不得為空", "請再次檢查", "error");
                     return;
                 }
             //檢查時間
                 const startDateTime = new Date(this.start_date);
                 const endDateTime = new Date(this.end_date);
                 if(startDateTime>=endDateTime){
-                    alert("開始時間不得晚於或等於結束時間")
+                    swal("開始時間", "不得晚於或等於結束時間", "error");
                     return;
                 }
                 this.addQuestionPage=true;
@@ -51,47 +43,33 @@ import axios from 'axios';
 //新增question(問卷選項)
             addQuestion(){
             //檢查欄位是否為空白
-                if(this.questionTitle==""||this.questionAnswer==""){
-                    alert("欄位不得為空，請再次檢查")
+                if(this.questionTitle==""||this.questionType==""){
+                    swal("欄位不得為空", "請再次檢查", "error");
                     return;
                 }
+                this.question_list.push({title:this.questionTitle,type:this.questionType,
+                    necessary:this.necessary,
+                    option:this.questionAnswer})
+                console.log(this.question_list)
 
-                let questionObj = {
-                    title : this.questionTitle,
-                    type : this.questionType,
-                    is_necessary : this.necessary,
-                    option : this.questionAnswer,
-                }
-
-                this.questionArr.push(questionObj);
-                console.log(questionObj);
-                localStorage.setItem("questionArr", JSON.stringify((this.questionArr)));
-
-                alert("新增成功")
+                swal("新增成功", "success");
                 this.questionTitle="";
                 this.questionAnswer="";
-                this.questionPage=false;
-                console.log(this.questionArr);
-
             },
 //儲存問卷未發布
             saveAndUnpublished(){
-                this.addQuiz();
-
-                let quizObj = {
-                    name : this.name,
-                    description : this.description,
-                    start_date : this.start_date,
-                    end_date : this.end_date,
-                    questions : this.questionArr,
-                    is_published: 0,
+            //檢查欄位是否為空白
+                if(this.name==""||this.description==""||this.start_date==""||this.end_date==""||this.questionTitle==""||this.questionType==""){
+                    swal("欄位不得為空", "請再次檢查", "error");
+                    return;
                 }
-
-                this.quizArr.push(quizObj);
-                console.log(quizObj);
-                localStorage.setItem("quizArr", JSON.stringify((this.quizArr)));
-
-                this.addQuestionPage=true;
+            //檢查時間
+                const startDateTime = new Date(this.start_date);
+                const endDateTime = new Date(this.end_date);
+                if(startDateTime>=endDateTime){
+                    swal("開始時間", "不得晚於或等於結束時間", "error");
+                    return;
+                }
 
                 axios({
                     url:'http://localhost:8080/quiz/create',
@@ -104,36 +82,32 @@ import axios from 'axios';
                         description : this.description,
                         start_date : this.start_date,
                         end_date : this.end_date,
-                        questions : this.questionArr,
+                        question_list : this.question_list,
                         is_published: 0,
                     },
                 }).then(res=>console.log(res))
-                alert("新增問卷完成，狀態為未發布")
+
+                swal("新增問卷完成", "狀態為未發布", "warning");
                 this.name="",
                 this.description="",
                 this.start_date="",
                 this.end_date="",
                 this.addQuestionPage=false
-                //this.goBackEntryPage();
             },
 //儲存問卷已發布
             saveAndPublished(){
-                this.addQuiz();
-
-                let quizObj = {
-                    name : this.name,
-                    description : this.description,
-                    start_date : this.start_date,
-                    end_date : this.end_date,
-                    questions : this.questionAnswer,
-                    is_published: 1,
+            //檢查欄位是否為空白
+                if(this.name==""||this.description==""||this.start_date==""||this.end_date==""||this.questionTitle==""||this.questionType==""){
+                    swal("欄位不得為空", "請再次檢查", "error");
+                    return;
                 }
-
-                this.quizArr.push(quizObj);
-                console.log(quizObj);
-                localStorage.setItem("quizArr", JSON.stringify((this.quizArr)));
-
-                this.addQuestionPage=true;
+            //檢查時間
+                const startDateTime = new Date(this.start_date);
+                const endDateTime = new Date(this.end_date);
+                if(startDateTime>=endDateTime){
+                    swal("開始時間", "不得晚於或等於結束時間", "error");
+                    return;
+                }
 
                 axios({
                     url:'http://localhost:8080/quiz/create',
@@ -146,61 +120,41 @@ import axios from 'axios';
                         description : this.description,
                         start_date : this.start_date,
                         end_date : this.end_date,
-                        questions : this.questionAnswer,
+                        question_list : this.question_list,
                         is_published: 1,
                     },
                 }).then(res=>console.log(res))
-                alert("新增問卷完成，狀態為已發布")
+                swal("新增問卷完成","狀態為已發布", "success");
                 this.name="",
                 this.description="",
                 this.start_date="",
                 this.end_date="",
+                this.questionTitle="",
+                this.questionType="",
+                this.questionAnswer="",
                 this.addQuestionPage=false
-                //this.goFrontEntryPage();
+                this.goBackEntryPage();
             },
-
-            deleteNewOptions(questionIndex, optionIndex) {
-            this.questArr[questionIndex].options.splice(optionIndex, 1);
-            const optionTextArray = this.questArr[questionIndex].options.map(option => option.text);
-            this.questArr[questionIndex].optionText = optionTextArray.join(';');
-            },
-            deleteTransaction(questionIndex){
-                this.questionArr.splice(questionIndex,1)
-                localStorage.setItem("questionArr",JSON.stringify(this.questionArr))
-            },
-            confirmDelete(){
-                console.log(123)
-                if(this.deleIndex!==null){
-                    this.deleteTransaction(this.deleIndex)
-                    this.deleIndex=null
-                }
-            },
-
-
-
-            goBackEntryPage(){
+            goBackEntry(){
                 this.$router.push('/BackEntry')
             },
-            goFrontEntryPage(){
+            goFrontEntry(){
                 this.$router.push('/')
             },
-            goTopicPage(){
+            goTopic(){
                 this.$router.push('/BackTopic')
             },
-            closeAddQuestionPage(){
+            closeAddQuestion(){
                 this.addQuestionPage=false;
             },
-            goCheckPage(){
+            goCheck(){
                 this.checkPage=true;
                 this.quizPage=false;
             },
-            closeCheckPage(){
+            closeCheck(){
                 this.checkPage=false;
                 this.quizPage=true;
-
             },
-        },
-        components:{
         },
     }
 </script>
@@ -236,18 +190,12 @@ import axios from 'axios';
             </div>
             <!-- 按鍵區域 -->
             <div class="addButtonArea">
-                <!-- <button type="button" @click="goBackEntryPage()">取消</button> -->
                 <button type="button" @click="addQuiz()">新增問題</button>
             </div>
 
 <!-- 新增問卷問題 -->
             <div class="addQuestion" v-if="addQuestionPage">
-                <i class="fa-solid fa-xmark" @click="closeAddQuestionPage()"></i>
-            <!-- 目前位置標示 -->
-            <!-- <div class="location">
-                <i class="fa-solid fa-thumbtack"></i>
-                <p>新增題目</p>
-            </div> -->
+                <i class="fa-solid fa-xmark" @click="closeAddQuestion()"></i>
             <!-- 新增問卷名稱 -->
                 <div class="questionName">
                     <p>問題 : </p>
@@ -286,19 +234,19 @@ import axios from 'axios';
                     <th>選項</th>
                     <th>刪除</th>
                 </tr>
-                <tr v-for="(question,questionIndex) in questionArr" :key="questionIndex" >
+                <tr v-for="(question,questionIndex) in question_list" :key="questionIndex" >
                     <td>{{questionIndex+1}}</td>
                     <td>{{ question.title }}</td>
                     <td>{{ question.type }}</td>
-                    <td><input type="checkbox" id="tdinput" v-model="question.is_necessary" name="" disabled ></td>
+                    <td><input type="checkbox" id="tdinput" v-model="question.necessary" name="" disabled ></td>
                     <td>{{ question.option }}</td>
                     <td><i class="fa-solid fa-trash-can" @cilck="confirmDelete()" :key="questionIndex"></i></td>
                 </tr>
             </table>
             <!-- 按鍵區域 -->
             <div class="questionButtonArea">
-                <button type="button" @click="goBackEntryPage()">取消</button>
-                <button type="button" @click="goCheckPage()">預覽</button>
+                <button type="button" @click="goBackEntry()">取消</button>
+                <button type="button" @click="goCheck()">預覽</button>
                 <button type="button" @click="saveAndUnpublished()">僅儲存</button>
                 <button type="button" @click="saveAndPublished()">儲存並發布</button>
             </div>
@@ -315,7 +263,6 @@ import axios from 'axios';
             <div class="quizTitle">
                 <p>{{ this.name }}</p>
             </div>
-            
             <!-- 問卷說明 -->
             <div class="quizDescription">
                 <p>{{ this.description }}</p>
@@ -340,54 +287,24 @@ import axios from 'axios';
                 </div>
             </div>
             <!-- 問卷作答區 -->
-            <div class="questionnaire" v-for="(question,questionIndex) in questionArr" :key="questionIndex">
+            <div class="questionnaire" v-for="(question,questionIndex) in question_list" :key="questionIndex">
                 <span>{{questionIndex+1}}.{{ question.title }}</span>
-                <span>* 是否必填 : {{ question.is_necessary }}</span>
-
-                <p>{{ question.type }}</p>
-                <div class="answer" v-for="op in question.option">
+                <h6>{{ question.type }}</h6>
+                <small>* 是否必填 : {{ question.is_necessary }}</small>
+                
+                <div class="answer" v-for="op in question.option.split(';')">
                     <input type="checkbox" name="" id="" v-if="question.type=='單選題'">
                     <input type="radio" name="" id="" v-if="question.type=='多選題'">
-                    <input type="textarea" name="" id="" v-if="question.type=='簡答題'">
+                    <input type="textarea" name="" id="textinput" v-if="question.type=='簡答題'" placeholder="請輸入簡答題答案">
                     <span>{{ op }}</span>
-
                 </div>
-
-                
-                
-                <!-- <p>{{ question.option }}</p> -->
-                <!-- <p><input type="checkbox">{{ question.option }}</p>
-                <p><input type="radio">{{ question.option }}</p>
-                <p><input type="textarea">{{ question.option }}</p> -->
-
-                <!-- <div class="inputOptions" v-if="question.option === 'radio'">
-                        <div v-for="(option, optionIndex) in question.optionText.split(';')" :key="optionIndex">
-                            <input type="radio" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                                :name="'question_' + index" v-model="doquestArr[question.questionId]">
-                            <label :for="'q_' + index + '_o_' + optionIndex">{{ question.option }}</label>
-                        </div>
-                    </div>
-                    <div class="inputOptions" v-else-if="question.questionType === 'checkbox'">
-                        <div v-for="(option, optionIndex) in question.optionText.split(';')" :key="optionIndex">
-                            <input type="checkbox" :id="'q_' + index + '_o_' + optionIndex" :value="option"
-                                v-model="doquestArr[question.questionId + '_' + optionIndex]">
-                            <label :for="'q_' + index + '_o_' + optionIndex">{{ option }}</label>
-                        </div>
-                    </div>
-                    <div class="inputOptions" v-else-if="question.questionType === 'text'">
-                        <input type="text" v-model="doquestArr[question.questionId]" :id="'q_' + index">
-                    </div> -->
-
-
             </div>
             <!-- 按鍵區域 -->
             <div class="checkButtonArea">
-                <button type="button" @click="closeCheckPage()">返回</button>
+                <button type="button" @click="closeCheck()">返回</button>
                 <button type="button">編輯</button>
             </div>
         </div>
-
-
     </div>
 </template>
 
@@ -397,7 +314,7 @@ import axios from 'axios';
         width: 100vw;
         display: flex;
         justify-content: center;
-//新增問卷內頁
+//新增問卷
         .addQuiz{
             margin-top: 7vmin;
             .location{
@@ -408,21 +325,17 @@ import axios from 'axios';
                 align-items: center;
                 justify-content: space-between;
                 margin-bottom: 2vmin;
-            
                 i{
                     font-size: 12pt;
                 }
-
                 p{
                     font-size: 18pt;
                     margin: 0;
                 }
             }
-
             p{
                 color: dimgray;
             }
-
             input{
                 width: 40vw;
                 height: 5vh;
@@ -443,7 +356,6 @@ import axios from 'axios';
             .addDescription{
                 display: flex;
                 margin-bottom: 3vmin;
-
                 textarea{
                         width: 28vw;
                         height: 15vh;
@@ -472,7 +384,6 @@ import axios from 'axios';
                 justify-content: center;
                 align-items: center;
                 display: flex;
-
                 button{
                     width: 9vw;
                     height: 4vh;
@@ -492,34 +403,16 @@ import axios from 'axios';
                     }
                 }
             }
-
-            //刪除ICON
-            .deleteIcon{
-                i{
-                    color: #9D9D9D;
-                    font-size: 20pt;;
-                    margin-left: 1vmin;
-                    margin-top: 5vmin;
-                    &:hover{
-                        color: lightslategray;
-                    }
-                    &:active{
-                        color: #9D9D9D;
-                    }
-                }
-            }
             //問卷列表顯示區
             table{
                 width: 45vw;
                 margin-top: 3vmin;
                 text-align: center;
-
                 tr{
                     th{
                         color: dimgray;
                         border: 2px solid #9D9D9D;
                     }
-
                     td{
                         color: dimgray;
                         border: 2px solid #9D9D9D;
@@ -547,7 +440,6 @@ import axios from 'axios';
                 justify-content: space-around;
                 align-items: center;
                 display: flex;
-
                 button{
                     width: 9vw;
                     height: 4vh;
@@ -567,8 +459,6 @@ import axios from 'axios';
                     }
                 }
             }
-
-
             //新增問卷名稱
             .addQuestion{
                 width: 47vw;
@@ -579,7 +469,6 @@ import axios from 'axios';
                 border: 1px solid dimgray;
                 border-radius: 5px;
                 position: relative;
-
                 i{
                     color: dimgray;
                     position: absolute;
@@ -597,7 +486,6 @@ import axios from 'axios';
                     margin-bottom: 2vmin;
                     margin-top: 6vmin;
                     margin-left: 2vmin;
-
                     input{
                         width: 28vw;
                         height: 4.5vh;
@@ -609,32 +497,27 @@ import axios from 'axios';
                         //margin-right: 1vmin;
                         margin-bottom: 2vmin;
                     }
-
                     .answerType{
                         display: flex;
                         align-items: center;
                         margin-bottom: 2vmin;
                         margin-left: 4vmin;
-
                         select{
                             width: 6vw;
                             border-radius: 5px;
                             color: dimgray;
                             outline: none;
                             margin-right: 2vmin;
-
                             option{
                                 color: dimgray;
                                 text-align: center;
                             }
                         } 
-
                         #checkinput{
                             width: 2.5vw;
                             height: 2vh;
                             margin: 0;
                         }
-
                         label{
                             color: dimgray;
                         }
@@ -667,7 +550,6 @@ import axios from 'axios';
                             padding-left: 1vmin;
                             border: 2px solid #9D9D9D;
                         } 
-
                         button{
                             width: 5vw;
                             height: 4vh;
@@ -677,7 +559,6 @@ import axios from 'axios';
                             border-radius: 5px;
                             background-color: #F8F0DF;
                             box-shadow: 1px 1px 1px lightgray;
-
                             &:hover{
                                 color: #F8F0DF;
                                 background-color: #9D9D9D;
@@ -691,16 +572,12 @@ import axios from 'axios';
                 }
             }
         }
-
-
-
-
+//問卷預覽
         .addCheck{
         width: 80vw;
         margin: auto;
         margin-top: 10vmin;
         border: 1px black solid;
-
         p{
             color: dimgray;
             text-align: center;
@@ -719,9 +596,8 @@ import axios from 'axios';
 //問卷說明
         .quizDescription{
             width: 70vw;
-            height: 15vh;
+            height: 10vh;
             font-size: 16pt;
-            //border: 1px solid black;
             margin: auto;
             margin-bottom: 3vmin;
         }
@@ -730,8 +606,6 @@ import axios from 'axios';
             width: 70vw;
             margin: auto;
             margin-bottom: 2vmin;
-            //border: 1px solid black;
-
             input{
                 width: 60vw;
                 height: 4.5vh;
@@ -742,7 +616,6 @@ import axios from 'axios';
                 border: 2px solid #9D9D9D;
                 margin-bottom: 2vmin;
             }
-
             #emailinput{
                 width: 60vw;
                 height: 4.5vh;
@@ -754,7 +627,6 @@ import axios from 'axios';
                 margin-bottom: 2vmin;
                 margin-right: 2vmin;
             }
-
             p{
                 font-size: 12pt;
             }
@@ -783,15 +655,40 @@ import axios from 'axios';
 //問卷作答區
         .questionnaire{
             width: 70vw;
-            height: 100vh;
-            border: 1px solid black;
             margin: auto;
+            position: relative;
+            span{
+                font-size: 18pt;
+                color: dimgray;
+                margin-right: 3vmin;
+            }
+            h6{
+                color: dimgray;
+                position: absolute;
+                right: 30%;
+                top:0.5%
+            }
+            small{
+                color: dimgray;
+                position: absolute;
+                right: 15%;
+            }
+            .answer{
+                margin-top: 1.5vmin;
+                #textinput{
+                    width: 40vw;
+                    height: 20vh;
+                    border-radius: 10px;
+                }
+                input{
+                    margin-bottom: 2vmin;
+                }
+            }
         }
 //按鍵區域 
         .checkButtonArea{
             width: 70vw;
             margin: auto;
-            //border: 1px solid black;
             text-align: center;
             margin-top: 5vmin;
 
@@ -804,12 +701,10 @@ import axios from 'axios';
                 border-radius: 5px;
                 background-color: #F8F0DF;
                 box-shadow: 1px 1px 1px lightgray;
-
                 &:hover{
                     color: #F8F0DF;
                     background-color: #9D9D9D;
                 }
-
                 &:active{
                     color: dimgray;
                     background-color: #F8F0DF;
@@ -817,5 +712,5 @@ import axios from 'axios';
             }
         }
     }
-    }
+}
 </style>

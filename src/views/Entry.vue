@@ -16,42 +16,40 @@ export default{
     },
     mounted(){
         axios({
-                    url:'http://localhost:8080/quiz/search',
-                    method:'POST',
-                    headers:{
-                        "Content-Type" : "application/json"
-                    },
-                    data:{
-                        quiz_name:"",
-                        start_date: "",
-                        end_date:"",
-                    },
-                }).then(res=>{
-                    res.data.quizList.forEach(element => {
-                        this.arr.push({name:element.name,description:element.description,startDate:element.startDate,endDate:element.endDate,is_published:element.published,question:element.questionStr,num:element.num})
-                    });
-                })
-                console.log(this.arr)
+            url:'http://localhost:8080/quiz/search',
+            method:'POST',
+            headers:{
+                "Content-Type" : "application/json"
+            },
+            data:{
+                quiz_name:"",
+                start_date: "",
+                end_date:"",
+            },
+        }).then(res=>{
+            res.data.quizList.forEach(element => {
+                this.arr.push({name:element.name,description:element.description,startDate:element.startDate,endDate:element.endDate,is_published:element.published,question:element.questionStr,num:element.num})
+            });
+        })
+            console.log(this.arr)
     },
     created(){
         this.pagination(this.arr, 1)
-
     },
     methods:{
         search(){
             axios({
-                    url:'http://localhost:8080/quiz/search',
-                    method:'POST',
-                    headers:{
-                        "Content-Type" : "application/json"
-                    },
-                    data:{
-                        quiz_name:"",
-                        start_date: "",
-                        end_date:"",
-                    },
-                }).then(res=>console.log(res))
-
+            url:'http://localhost:8080/quiz/search',
+            method:'POST',
+            headers:{
+                "Content-Type" : "application/json"
+            },
+            data:{
+                quiz_name:"",
+                start_date: "",
+                end_date:"",
+            },
+        }).then(res=>console.log(res))
         },
         getStatus(startTime, endTime) {
             const now = new Date();
@@ -172,7 +170,14 @@ export default{
             </tr>
             <tr v-for="(item,index) in this.arr">
                 <td>{{index+1}}</td>
-                <td>{{ item.name }}</td>
+                <td>
+                    <router-link v-if="isLinkEnabledForDoPage(item.startDate, item.endDate)"
+                                :to="'/FrontQuestion'" class="router-link-custom">
+                                {{ item.name }}
+                    </router-link>
+                        <span v-else>{{ item.name }}</span>
+                </td>
+                <!-- <td>{{ item.name }}</td> -->
                 <td>
                     <span :style="{ color: getStatusColor(item.startDate, item.endDate) }">
                                 {{ getStatus(item.startDate, item.endDate) }}

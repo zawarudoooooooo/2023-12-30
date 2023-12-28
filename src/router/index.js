@@ -25,6 +25,11 @@ const router = createRouter({
       component: () => import('../views/BackEnd/BackAdd.vue')
     },
     {
+      path: '/BackQuestion',
+      name: 'BackQuestion',
+      component: () => import('../views/BackEnd/BackQuestion.vue')
+    },
+    {
       path: '/BackFeback',
       name: 'BackFeback',
       component: () => import('../views/BackEnd/BackFeback.vue')
@@ -33,11 +38,6 @@ const router = createRouter({
       path: '/BackCaculate',
       name: 'BackCaculate',
       component: () => import('../views/BackEnd/BackCaculate.vue')
-    },
-    {
-      path: '/BackQuestionCheck',
-      name: 'BackQuestionCheck',
-      component: () => import('../views/BackEnd/BackQuestionCheck.vue')
     },
     {
       path: '/BackAnswerFeback',

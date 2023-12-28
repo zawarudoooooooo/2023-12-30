@@ -10,18 +10,12 @@ export default{
     mounted(){
         axios({
                 url:'http://localhost:8080/quiz/getAll',
-                method:'GET',
+                method:'POST',
                 headers:{
                     "Content-Type" : "application/json"
                 },
                 data:{
-                    num: "",
-                    name: "",
-                    description: "",
-                    startDate: "",
-                    endDate: "",
-                    questionStr: "",
-                    published: ""
+
                 },
             }).then(res=>{
                 res.data.quizList.forEach(element => {
@@ -132,7 +126,17 @@ export default{
             </tr>
             <tr v-for="(item,index) in this.arr">
                 <td>{{index+1}}</td>
-                <td>{{ item.name }}</td>
+                <!-- <td>
+                    <router-link v-if="isLinkEnabledForDoPage(item.startDate, item.endDate)"
+                                :to="'/BackQuestion'" class="router-link-custom">
+                                {{ item.name }}
+                    </router-link>
+                        <span v-else>{{ item.name }}</span>
+                </td> -->
+                <td>
+                    <router-link :to="'/BackQuestion'">{{ item.name }}</router-link>
+                </td>
+                <!-- <td>{{ item.name }}</td> -->
                 <td>
                     <span :style="{ color: getStatusColor(item.startDate, item.endDate) }">
                                 {{ getStatus(item.startDate, item.endDate) }}
