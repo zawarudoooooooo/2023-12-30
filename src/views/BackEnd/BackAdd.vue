@@ -18,7 +18,7 @@ import swal from 'sweetalert';
                 questionAnswer:[],
                 question_list:[],
 
-            //check
+            //page
                 checkPage:false,
                 addQuestionPage:false,
             }
@@ -52,25 +52,16 @@ import swal from 'sweetalert';
                     option:this.questionAnswer})
                 console.log(this.question_list)
 
-                swal("新增成功", "success");
+                swal("新增問題","成功","success");
                 this.questionTitle="";
                 this.questionAnswer="";
             },
+//刪除question(問卷選項)
+            deleteQuestion(questionIndex){
+                this.question_list.splice(questionIndex, 1);
+            },
 //儲存問卷未發布
             saveAndUnpublished(){
-            //檢查欄位是否為空白
-                if(this.name==""||this.description==""||this.start_date==""||this.end_date==""||this.questionTitle==""||this.questionType==""){
-                    swal("欄位不得為空", "請再次檢查", "error");
-                    return;
-                }
-            //檢查時間
-                const startDateTime = new Date(this.start_date);
-                const endDateTime = new Date(this.end_date);
-                if(startDateTime>=endDateTime){
-                    swal("開始時間", "不得晚於或等於結束時間", "error");
-                    return;
-                }
-
                 axios({
                     url:'http://localhost:8080/quiz/create',
                     method:'POST',
@@ -86,29 +77,14 @@ import swal from 'sweetalert';
                         is_published: 0,
                     },
                 }).then(res=>console.log(res))
+                localStorage.setItem("question_list", JSON.stringify((this.question_list)));
 
                 swal("新增問卷完成", "狀態為未發布", "warning");
-                this.name="",
-                this.description="",
-                this.start_date="",
-                this.end_date="",
                 this.addQuestionPage=false
+                this.goBackEntry();
             },
 //儲存問卷已發布
             saveAndPublished(){
-            //檢查欄位是否為空白
-                if(this.name==""||this.description==""||this.start_date==""||this.end_date==""||this.questionTitle==""||this.questionType==""){
-                    swal("欄位不得為空", "請再次檢查", "error");
-                    return;
-                }
-            //檢查時間
-                const startDateTime = new Date(this.start_date);
-                const endDateTime = new Date(this.end_date);
-                if(startDateTime>=endDateTime){
-                    swal("開始時間", "不得晚於或等於結束時間", "error");
-                    return;
-                }
-
                 axios({
                     url:'http://localhost:8080/quiz/create',
                     method:'POST',
@@ -125,15 +101,8 @@ import swal from 'sweetalert';
                     },
                 }).then(res=>console.log(res))
                 swal("新增問卷完成","狀態為已發布", "success");
-                this.name="",
-                this.description="",
-                this.start_date="",
-                this.end_date="",
-                this.questionTitle="",
-                this.questionType="",
-                this.questionAnswer="",
                 this.addQuestionPage=false
-                this.goBackEntryPage();
+                this.goBackEntry();
             },
             goBackEntry(){
                 this.$router.push('/BackEntry')
@@ -155,7 +124,7 @@ import swal from 'sweetalert';
                 this.checkPage=false;
                 this.quizPage=true;
             },
-        },
+        }
     }
 </script>
 
@@ -240,15 +209,13 @@ import swal from 'sweetalert';
                     <td>{{ question.type }}</td>
                     <td><input type="checkbox" id="tdinput" v-model="question.necessary" name="" disabled ></td>
                     <td>{{ question.option }}</td>
-                    <td><i class="fa-solid fa-trash-can" @cilck="confirmDelete()" :key="questionIndex"></i></td>
+                    <td><i class="fa-solid fa-trash-can" @click="deleteQuestion(questionIndex)" :key="questionIndex"></i></td>
                 </tr>
             </table>
             <!-- 按鍵區域 -->
             <div class="questionButtonArea">
                 <button type="button" @click="goBackEntry()">取消</button>
                 <button type="button" @click="goCheck()">預覽</button>
-                <button type="button" @click="saveAndUnpublished()">僅儲存</button>
-                <button type="button" @click="saveAndPublished()">儲存並發布</button>
             </div>
         </div>
 
@@ -267,30 +234,11 @@ import swal from 'sweetalert';
             <div class="quizDescription">
                 <p>{{ this.description }}</p>
             </div>
-            <!-- 填答者資訊 -->
-            <div class="answerInfo">
-                <div class="answerName">
-                    <p>姓名 : </p>
-                    <input type="text" disabled>
-                </div>
-                <div class="answerNumber">
-                    <p>手機 : </p>
-                    <input type="number" disabled>
-                </div>
-                <div class="answerEmail">
-                    <p>E-mail : </p>
-                    <input type="text" id="emailinput" disabled>
-                </div>
-                <div class="answerAge">
-                    <p>年齡 : </p>
-                    <input type="number" disabled>
-                </div>
-            </div>
             <!-- 問卷作答區 -->
             <div class="questionnaire" v-for="(question,questionIndex) in question_list" :key="questionIndex">
                 <span>{{questionIndex+1}}.{{ question.title }}</span>
                 <h6>{{ question.type }}</h6>
-                <small>* 是否必填 : {{ question.is_necessary }}</small>
+                <small>* 是否必填 : {{ question.necessary}}</small>
                 
                 <div class="answer" v-for="op in question.option.split(';')">
                     <input type="checkbox" name="" id="" v-if="question.type=='單選題'">
@@ -302,10 +250,11 @@ import swal from 'sweetalert';
             <!-- 按鍵區域 -->
             <div class="checkButtonArea">
                 <button type="button" @click="closeCheck()">返回</button>
-                <button type="button">編輯</button>
+                <button type="button" @click="saveAndUnpublished()">僅儲存</button>
+                <button type="button" @click="saveAndPublished()">儲存並發布</button>
+            </div>
             </div>
         </div>
-    </div>
 </template>
 
 
@@ -577,7 +526,6 @@ import swal from 'sweetalert';
         width: 80vw;
         margin: auto;
         margin-top: 10vmin;
-        border: 1px black solid;
         p{
             color: dimgray;
             text-align: center;
@@ -601,57 +549,6 @@ import swal from 'sweetalert';
             margin: auto;
             margin-bottom: 3vmin;
         }
-//填答者資訊
-        .answerInfo{
-            width: 70vw;
-            margin: auto;
-            margin-bottom: 2vmin;
-            input{
-                width: 60vw;
-                height: 4.5vh;
-                outline: none;
-                margin-left: 1vmin;
-                border-radius: 10px;
-                padding-left: 1vmin;
-                border: 2px solid #9D9D9D;
-                margin-bottom: 2vmin;
-            }
-            #emailinput{
-                width: 60vw;
-                height: 4.5vh;
-                outline: none;
-                margin-left: 1vmin;
-                border-radius: 10px;
-                padding-left: 1vmin;
-                border: 2px solid #9D9D9D;
-                margin-bottom: 2vmin;
-                margin-right: 2vmin;
-            }
-            p{
-                font-size: 12pt;
-            }
-            .answerName{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .answerNumber{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                
-            }
-            .answerEmail{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .answerAge{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-        }
 //問卷作答區
         .questionnaire{
             width: 70vw;
@@ -665,13 +562,13 @@ import swal from 'sweetalert';
             h6{
                 color: dimgray;
                 position: absolute;
-                right: 30%;
+                right: 10%;
                 top:0.5%
             }
             small{
                 color: dimgray;
                 position: absolute;
-                right: 15%;
+                right: 0.1%;
             }
             .answer{
                 margin-top: 1.5vmin;

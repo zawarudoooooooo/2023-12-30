@@ -3,15 +3,27 @@ import axios from 'axios';
 export default{
     data(){
         return{
-            searchStartDate:"",
-            searchEndDate:"",
-            searchText:"",
-            arr:[],
+            //模糊搜尋
+            name:"",
+            startDate:"",
+            endDate:"",
+            isLogin:false,
+
+            //writer
+            writerName:"",
+            writerPhone:"",
+            writerEmail:"",
+            writerAge:"",
 
             //分頁
             dataPages:[],
             dataArr:[],
             currentIndex:1,
+
+            //頁面開關
+            modal:false,
+
+            arr:[],
         }
     },
     mounted(){
@@ -19,38 +31,81 @@ export default{
             url:'http://localhost:8080/quiz/search',
             method:'POST',
             headers:{
-                "Content-Type" : "application/json"
+                'Content-Type':'application/json'
             },
             data:{
                 quiz_name:"",
-                start_date: "",
+                start_date:"",
                 end_date:"",
+                is_login:false,
+            //   Object.values(this.question).map(question => question)
+                is_published:true
             },
         }).then(res=>{
-            res.data.quizList.forEach(element => {
-                this.arr.push({name:element.name,description:element.description,startDate:element.startDate,endDate:element.endDate,is_published:element.published,question:element.questionStr,num:element.num})
-            });
-        })
-            console.log(this.arr)
+            this.arr.push(res.data.quizList)
+            console.log(this.arr);
+            })
+            console.log(this.arr);
+        
     },
     created(){
         this.pagination(this.arr, 1)
     },
     methods:{
+//搜尋問卷
         search(){
             axios({
             url:'http://localhost:8080/quiz/search',
             method:'POST',
             headers:{
-                "Content-Type" : "application/json"
+                'Content-Type':'application/json'
             },
             data:{
-                quiz_name:"",
-                start_date: "",
-                end_date:"",
+                quiz_name:this.name,
+                start_date:this.startDate,
+                end_date:this.endDate,
+                is_login:false,
+            //   Object.values(this.question).map(question => question)
+                is_published:true
             },
-        }).then(res=>console.log(res))
+            }).then(res=>{
+                if(this.arr.length!=0){
+                    this.arr.length=0
+                    this.arr.push(res.data.quizList)
+                    this.name=""
+                    this.startDate=""
+                    this.endDate=""
+                    console.log(res.data)
+                    return
+                }
+            })
         },
+//抓取問卷個別頁面
+        upData(index){
+            this.modal=true;
+            this.arr.forEach(arr=>{
+                arr.forEach((item,itemIndex)=>{           
+                    if(itemIndex!=index){
+                        return
+                    }
+
+            let test=item.questionList
+            this.upName=item.name
+            this.upDescription=item.description
+            this.upStartData=item.startDate
+            this.upEndDate=item.endDate
+            if(this.upQuestionList!=""){
+                this.upQuestionList=""
+            }
+            this.upQuestionList=JSON.parse(test)
+            console.log(this.upQuestionList);
+          // console.log(this.upquestionList);
+          // console.log(item.questionStr);
+            })
+        })
+    },
+
+//抓狀態
         getStatus(startTime, endTime) {
             const now = new Date();
             const startDate = new Date(startTime);
@@ -64,6 +119,7 @@ export default{
                 return '已結束';
             }
         },
+//狀態顯示顏色
         getStatusColor(startTime, endTime) {
             const status = this.getStatus(startTime, endTime);
 
@@ -108,6 +164,7 @@ export default{
         goFrontCaculate(){
             this.$router.push('/FrontCaculate')
         },
+//頁面
         pagination(data,nowPage){
             const dataTotal = data.length;
             const pageData = 10;
@@ -147,14 +204,14 @@ export default{
 <!-- 問卷名稱 -->
             <div class="questionnaire">
                 <p>問卷名稱 : </p>
-                <input type="text" v-model="this.searchText">
+                <input type="text" v-model="this.name">
             </div>
 <!-- 開始/結束時間 -->
             <div class="time">
                 <p>開始時間 : </p>
-                <input type="date" v-model="this.searchStartDate">
+                <input type="date" v-model="this.startDate">
                 <p>到</p>
-                <input type="date" id="inputdate" v-model="this.searchEndDate">
+                <input type="date" id="inputdate" v-model="this.endDate">
                 <button type="button" @click="search()">搜尋</button>            
             </div>
         </div>
@@ -168,27 +225,106 @@ export default{
                 <th>結束時間</th>
                 <th>結果</th>
             </tr>
-            <tr v-for="(item,index) in this.arr">
-                <td>{{index+1}}</td>
-                <td>
-                    <router-link v-if="isLinkEnabledForDoPage(item.startDate, item.endDate)"
-                                :to="'/FrontQuestion'" class="router-link-custom">
-                                {{ item.name }}
-                    </router-link>
-                        <span v-else>{{ item.name }}</span>
-                </td>
-                <!-- <td>{{ item.name }}</td> -->
-                <td>
-                    <span :style="{ color: getStatusColor(item.startDate, item.endDate) }">
-                                {{ getStatus(item.startDate, item.endDate) }}
-                    </span>
-                </td>
-                <td>{{ item.startDate }}</td>
-                <td>{{ item.endDate }}</td>
-                <td @click="goFrontCaculate()">預設統計頁面</td>
-            </tr>
+            <tbody v-for="item in this.arr">
+                <tr  v-for="(item1,index) in item">
+                    <td>{{index+1}}</td>
+                    <td>
+                        <button type="button" @click="upData(index)" class="btn" data-bs-toggle="modal" 
+                                    data-bs-target="#exampleModal">{{ item1.name }}
+                        </button>
+                    </td>
+                    <td>
+                        <span :style="{ color: getStatusColor(item1.startDate, item1.endDate) }">
+                                {{ getStatus(item1.startDate, item1.endDate) }}
+                        </span>
+                    </td>
+                    <td>{{ item1.startDate }}</td>
+                    <td>{{ item1.endDate }}</td>
+                    <td @click="goFrontCaculate()">預設統計頁面</td>
+                </tr>
+            </tbody>
         </table>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">問卷內容</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">姓名 :</label>
+                                <input type="text" v-model="this.writerName" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">電話 :</label>
+                                <input type="text" v-model="this.writerPhone" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">E-mail :</label>
+                                <input type="text" v-model="this.writerEmail" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">年齡 :</label>
+                                <input type="text" v-model="this.writerAge" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">問卷名稱 :</label>
+                                <input type="text" v-model="this.upName" class="form-control" id="recipient-name" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">問卷說明 :</label>
+                                <textarea v-model="this.upDescription" class="form-control" id="message-text" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">開始時間 :</label>
+                                <input type="date" v-model="this.upStartData" class="form-control" id="recipient-name" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">結束時間 :</label>
+                                <input type="date" v-model="this.upEndDate" class="form-control" id="recipient-name" disabled>
+                            </div>
+                            <div class="queiont" v-for="(item,index) in upQuestionList">
+                                <div class="num">第{{ index+1 }}題</div>
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">問題名稱 :</label>
+                                        <input type="text" v-model="item.title" class="form-control" id="recipient-name" disabled>
+                                    </div>
+                                    <div class="mb-3">
+                                        <select v-model="item.type" name="" id="" disabled>
+                                            <option value="">請選擇</option>
+                                            <option value="單選題">單選題</option>
+                                            <option value="多選題">多選題</option>
+                                            <option value="簡答題">簡答題</option>
+                                        </select>
+                                        <input type="checkbox" class="chBox" name="necessary" value="true" v-model="item.necessary" id="" disabled>
+                                        <span>必填</span>
+                                    </div>
+                                    <div class="mb-3">
+                                            <label for="message-text" class="col-form-label">回答:</label>
+                                            <div class="answer" v-for="op in item.option.split(';')">
+                                                <input type="checkbox" name="" id="" v-if="item.type=='單選題'">
+                                                <input type="radio" name="" id="" v-if="item.type=='多選題'">
+                                                <textarea name="" id="textinput" v-if="item.type=='簡答題'" placeholder="請輸入簡答題答案"></textarea>
+                                                <!-- <input type="textarea" name="" id="textinput" v-if="item.type=='簡答題'" placeholder="請輸入簡答題答案"> -->
+                                                <span>{{ op }}</span>
+                                            </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">填寫</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 </template>
 
 <style lang="scss" scoped>
@@ -301,5 +437,16 @@ export default{
                     }
             }
         }
+    }
+//modal
+    select{
+        margin-right: 3vmin;
+    }
+    textarea{
+        width: 20vw;
+        height: 10vh;
+        border-radius: 5px;
+        outline: none;
+        padding-left: 1vmin;
     }
 </style>
