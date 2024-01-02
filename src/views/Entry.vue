@@ -14,16 +14,24 @@ export default{
             writerPhone:"",
             writerEmail:"",
             writerAge:"",
+            writerAnswer:[],
+
+            //問卷顯示
+            upNum:0,
+            upName:"",
+            upStartDate:"",
+            upEndDate:"",
+            upDescription:"",
+            upQuestionList:"",
 
             //分頁
             dataPages:[],
             dataArr:[],
             currentIndex:1,
 
-            //頁面開關
-            modal:false,
-
             arr:[],
+
+            obj:[]
         }
     },
     mounted(){
@@ -34,26 +42,55 @@ export default{
                 'Content-Type':'application/json'
             },
             data:{
-                quiz_name:"",
-                start_date:"",
-                end_date:"",
+                num:this.upNum,
+                name : this.upName,
+                description : this.upDescription,
+                start_date : this.upStartDate,
+                end_date : this.upEndDate,
+                questions: this.upQuestionList,
                 is_login:false,
-            //   Object.values(this.question).map(question => question)
-                is_published:true
             },
         }).then(res=>{
             this.arr.push(res.data.quizList)
-            console.log(this.arr);
+            //console.log(this.arr);
             })
-            console.log(this.arr);
+            //console.log(this.arr);
         
     },
-    created(){
-        this.pagination(this.arr, 1)
-    },
+    // created(){
+    //     this.pagination(this.arr, 1)
+    // },
     methods:{
+//抓取問卷個別頁面
+        upData(index){
+            this.arr.forEach(arr=>{
+                // console.log(arr);
+                arr.forEach((item,itemIndex)=>{  
+                    if(itemIndex!=index){
+                        return
+                    }
+
+                let test=item.questionList
+                this.upNum=item.num
+                this.upName=item.name
+                this.upDescription=item.description
+                this.upStartDate=item.startDate
+                this.upEndDate=item.endDate
+
+            if(this.upQuestionList!=""){
+                this.upQuestionList=""
+            }
+            this.upQuestionList=JSON.parse(test)
+            this.upQuestionList.forEach(item=>{
+                this.obj.push(item.option.split(";"))
+            })
+            //console.log(this.obj);
+            // console.log(this.upQuestionList);
+            })
+        })
+    },
 //搜尋問卷
-        search(){
+    search(){
             axios({
             url:'http://localhost:8080/quiz/search',
             method:'POST',
@@ -64,9 +101,7 @@ export default{
                 quiz_name:this.name,
                 start_date:this.startDate,
                 end_date:this.endDate,
-                is_login:false,
-            //   Object.values(this.question).map(question => question)
-                is_published:true
+                is_login:true,
             },
             }).then(res=>{
                 if(this.arr.length!=0){
@@ -75,36 +110,119 @@ export default{
                     this.name=""
                     this.startDate=""
                     this.endDate=""
-                    console.log(res.data)
                     return
                 }
             })
         },
-//抓取問卷個別頁面
-        upData(index){
-            this.modal=true;
-            this.arr.forEach(arr=>{
-                arr.forEach((item,itemIndex)=>{           
-                    if(itemIndex!=index){
+//填寫問卷
+        write(){
+            const test = document.querySelectorAll('.radio')
+            const test1 = document.querySelectorAll('.checkbox')
+            const test2 = document.querySelectorAll('.textarea')
+
+            this.writerAnswer = []
+
+            //console.log(this.obj)
+            //console.log(this.upQuestionList)
+
+            this.upQuestionList.forEach(item=>{
+                //console.log(item)
+                console.log(item.option)
+                this.obj.forEach(opp=>{
+                    //console.log(item1)
+                    //console.log(this.obj)
+                    console.log(opp)
+                  
+                    if(item.option!=opp){
                         return
                     }
-
-            let test=item.questionList
-            this.upName=item.name
-            this.upDescription=item.description
-            this.upStartData=item.startDate
-            this.upEndDate=item.endDate
-            if(this.upQuestionList!=""){
-                this.upQuestionList=""
-            }
-            this.upQuestionList=JSON.parse(test)
-            console.log(this.upQuestionList);
-          // console.log(this.upquestionList);
-          // console.log(item.questionStr);
+                    item.option=opp
+                    console.log(opp)
+                    //console.log(item.option)
+                    
+                })
             })
-        })
-    },
+            // this.upQuestionList.forEach(item=>{
+            //     this.obj.forEach(item1=>{
+            //         if(item.option!=item1){
+            //             return
+            //         }
+            //         console.log(obj)
+            //         console.log(item.option)
+            //     })
+            // })
 
+
+            //.upQuestionList.forEach(item=>{
+                //this.obj.forEach(obj=>{
+                    //if(item.option!=obj){
+                       // return
+                    //}
+                    //console.log(obj);
+                    //console.log(item.option);
+                    // item.option=test
+                //})
+                // console.log(item);
+            //})
+
+            test.forEach((test,testIndex)=>{
+                if(test.checked){
+                    this.upQuestionList.forEach((question,questionIndex)=>{
+                        console.log();
+                        if(question.type==='單選題'){
+                            const optValues = Object.values(question.option);
+                            this.writerAnswer.push({qNum:questionIndex+1,optionList:[optValues[testIndex]]});
+                        }
+                    })
+                }
+            })
+
+            test1.forEach((test1,test1Index)=>{
+                if(test1.checked){
+                    this.upQuestionList.forEach((question,questionIndex)=>{
+                        console.log();
+                        if(question.type==='多選題'){
+                            const optValues = Object.values(question.option);
+                            this.writerAnswer.push({qNum:questionIndex+1,optionList:[optValues[test1Index]]});
+                        }
+                    })
+                }
+            })
+
+            test2.forEach((test2,test2Index)=>{
+                if(test2.checked){
+                    this.upQuestionList.forEach((question,questionIndex)=>{
+                        console.log();
+                        if(question.type==='簡答題'){
+                            const optValues = Object.values(question.option);
+                            this.writerAnswer.push({qNum:questionIndex+1,optionList:[optValues[test2Index]]});
+                        }
+                    })
+                }
+            })
+            
+
+
+
+            // axios({
+            // url:'http://localhost:8080/quiz/write',
+            // method:'POST',
+            // headers:{
+            //     'Content-Type':'application/json'
+            // },
+            // data:{
+            //     quiz_num:this.upNum,
+            //     name:this.writerName,
+            //     phone:this.writerPhone,
+            //     email:this.writerEmail,
+            //     age:this.writerAge,
+            //     answer:this.writerAnswer,
+            // },
+            // }).then(res=>{
+
+            // })
+
+        },
 //抓狀態
         getStatus(startTime, endTime) {
             const now = new Date();
@@ -165,34 +283,34 @@ export default{
             this.$router.push('/FrontCaculate')
         },
 //頁面
-        pagination(data,nowPage){
-            const dataTotal = data.length;
-            const pageData = 10;
+        // pagination(data,nowPage){
+        //     const dataTotal = data.length;
+        //     const pageData = 10;
 
-            this.dataPages = [];
-            const pageTotal = Math.ceil(dataTotal/pageData);
-            for(let i = 1; i<=pageTotal ; i++){
-                this.dataPages.push(i)
-            }
-            console.log(this.dataPages)
-            console.log(`全部資料:${dataTotal} 每一頁顯示:${pageData}筆 總頁數:${pageTotal}`)
+        //     this.dataPages = [];
+        //     const pageTotal = Math.ceil(dataTotal/pageData);
+        //     for(let i = 1; i<=pageTotal ; i++){
+        //         this.dataPages.push(i)
+        //     }
+        //     console.log(this.dataPages)
+        //     console.log(`全部資料:${dataTotal} 每一頁顯示:${pageData}筆 總頁數:${pageTotal}`)
 
-            let currentPage = nowPage;
+        //     let currentPage = nowPage;
 
-            if(currentPage>pageTotal){
-                currentPage = pageTotal;
-            }
+        //     if(currentPage>pageTotal){
+        //         currentPage = pageTotal;
+        //     }
 
-            const minData = (currentPage * pageData) - pageData;
-            const maxData = (currentPage * pageData);
+        //     const minData = (currentPage * pageData) - pageData;
+        //     const maxData = (currentPage * pageData);
 
-            this.dataArr = this.arr.slice(minData, maxData)
+        //     this.dataArr = this.arr.slice(minData, maxData)
 
-        },
-        changePages(nowPage){
-            this.pagination(this.arr, nowPage)
-            this.currentPage = nowPage
-        },
+        // },
+        // changePages(nowPage){
+        //     this.pagination(this.arr, nowPage)
+        //     this.currentPage = nowPage
+        // },
     },
 }
 </script>
@@ -247,7 +365,7 @@ export default{
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="modal">
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -282,7 +400,7 @@ export default{
                             </div>
                             <div class="mb-3">
                                 <label for="recipient-name" class="col-form-label">開始時間 :</label>
-                                <input type="date" v-model="this.upStartData" class="form-control" id="recipient-name" disabled>
+                                <input type="date" v-model="this.upStartDate" class="form-control" id="recipient-name" disabled>
                             </div>
                             <div class="mb-3">
                                 <label for="recipient-name" class="col-form-label">結束時間 :</label>
@@ -307,10 +425,9 @@ export default{
                                     <div class="mb-3">
                                             <label for="message-text" class="col-form-label">回答:</label>
                                             <div class="answer" v-for="op in item.option.split(';')">
-                                                <input type="checkbox" name="" id="" v-if="item.type=='單選題'">
-                                                <input type="radio" name="" id="" v-if="item.type=='多選題'">
-                                                <textarea name="" id="textinput" v-if="item.type=='簡答題'" placeholder="請輸入簡答題答案"></textarea>
-                                                <!-- <input type="textarea" name="" id="textinput" v-if="item.type=='簡答題'" placeholder="請輸入簡答題答案"> -->
+                                                <input type="radio" name="單選題" id="" v-if="item.type=='單選題'" class="radio">
+                                                <input type="checkbox" name="多選題" id="" v-if="item.type=='多選題'" class="checkbox">
+                                                <textarea name="簡答題" id="textinput" v-if="item.type=='簡答題'" placeholder="請輸入簡答題答案" class="textarea"></textarea>
                                                 <span>{{ op }}</span>
                                             </div>
                                     </div>
@@ -320,7 +437,7 @@ export default{
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">填寫</button>
+                        <button type="button" class="btn btn-light"  @click="write()">填寫</button>
                     </div>
                 </div>
             </div>
@@ -443,10 +560,11 @@ export default{
         margin-right: 3vmin;
     }
     textarea{
-        width: 20vw;
+        width: 27.5vw;
         height: 10vh;
         border-radius: 5px;
         outline: none;
         padding-left: 1vmin;
+        resize: none;
     }
 </style>

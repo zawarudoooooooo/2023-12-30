@@ -10,14 +10,15 @@ export default{
             isLogin:true,
 
             //問卷顯示
+            upNum:0,
             upName:"",
-            upStartData:"",
+            upStartDate:"",
             upEndDate:"",
             upDescription:"",
             upQuestionList:"",
 
             //頁面開關
-            modal:false,
+            //modal:false,
 
             arr:[],
         }
@@ -30,10 +31,18 @@ export default{
                 'Content-Type':'application/json'
             },
             data:{
-                quiz_name:"",
-                start_date:"",
-                end_date:"",
+                num:this.upNum,
+                name : this.upName,
+                description : this.upDescription,
+                start_date : this.upStartDate,
+                end_date : this.upEndDate,
+                questions: this.upQuestionList,
                 is_login:true,
+
+                // quiz_name:"",
+                // start_date:"",
+                // end_date:"",
+                
             //   Object.values(this.question).map(question => question)
                 //is_published:false
             },
@@ -46,24 +55,35 @@ export default{
     methods:{
 //抓取問卷個別頁面
         upData(index){
-            this.modal=true;
             this.arr.forEach(arr=>{
-                arr.forEach((item,itemIndex)=>{           
+                // console.log(arr);
+                arr.forEach((item,itemIndex)=>{  
                     if(itemIndex!=index){
                         return
                     }
+                    //console.log(item);
+                   // console.log(item.questionList)
 
-            let test=item.questionList
-            this.upName=item.name
-            this.upDescription=item.description
-            this.upStartData=item.startDate
-            this.upEndDate=item.endDate
+                let test=item.questionList
+                //console.log(test)
+                // item.num=this.upNum
+                // item.name=this.upName
+                // item.description=this.upDescription
+                // item.startDate=this.upStartDate
+                // item.endDate=this.upEndDate
+
+                this.upNum=item.num
+                this.upName=item.name
+                this.upDescription=item.description
+                this.upStartDate=item.startDate
+                this.upEndDate=item.endDate
+
             if(this.upQuestionList!=""){
                 this.upQuestionList=""
             }
             this.upQuestionList=JSON.parse(test)
+            // console.log(this.upName);
             console.log(this.upQuestionList);
-          // console.log(this.upquestionList);
           // console.log(item.questionStr);
             })
         })
@@ -91,7 +111,7 @@ export default{
                     this.name=""
                     this.startDate=""
                     this.endDate=""
-                    console.log(res.data)
+                    //console.log(res.data)
                     return
                 }
             })
@@ -111,8 +131,8 @@ export default{
                 this.search()
             })
         },
-//編輯問卷
-        edit(num){
+//編輯問卷(只有未發布可更改)
+        edit(){
             axios({
                 url:'http://localhost:8080/quiz/update',
                 method:'POST',
@@ -120,10 +140,18 @@ export default{
                     "Content-Type" : "application/json"
                 },
                 params:{
-                    quiz_num:num
+                    quiz_num:this.upNum
                 },
-            }).then(res=>{
-                this.search()
+                data:{
+                    name : this.upName,
+                    description : this.upDescription,
+                    start_date : this.upStartDate,
+                    end_date : this.upEndDate,
+                    question_list: this.upQuestionList,
+                    is_published: 0,
+                },
+            }).then(res=>{                
+                console.log(res.data)
             })
         },
 //抓狀態
@@ -133,9 +161,9 @@ export default{
             const endDate = new Date(endTime);
 
             if (now < startDate) {
-                return '尚未開始';
+                return '尚未發布';
             } else if (now >= startDate && now <= endDate) {
-                return '進行中';
+                return '已發布';
             } else {
                 return '已結束';
             }
@@ -144,9 +172,9 @@ export default{
         getStatusColor(startTime, endTime) {
             const status = this.getStatus(startTime, endTime);
 
-            if (status === '尚未開始') {
+            if (status === '尚未發布') {
                 return 'orange'; // 设置尚未开始状态的文字颜色为橙色
-            } else if (status === '進行中') {
+            } else if (status === '已發布') {
                 return 'green'; // 设置进行中状态的文字颜色为绿色
             } else if (status === '已結束') {
                 return 'red'; // 设置已结束状态的文字颜色为红色
@@ -259,7 +287,7 @@ export default{
     </div>
 
 <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="modal">
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -278,7 +306,7 @@ export default{
                             </div>
                             <div class="mb-3">
                                 <label for="recipient-name" class="col-form-label">開始時間 :</label>
-                                <input type="date" v-model="this.upStartData" class="form-control" id="recipient-name">
+                                <input type="date" v-model="this.upStartDate" class="form-control" id="recipient-name">
                             </div>
                             <div class="mb-3">
                                 <label for="recipient-name" class="col-form-label">結束時間 :</label>
@@ -309,7 +337,7 @@ export default{
                         </form>
                     </div>
                     <div class="modal-footer" v-for="item in arr">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="edit(item.num)">確認修改</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="edit()">確認修改</button>
                     </div>
                 </div>
             </div>
@@ -438,5 +466,12 @@ export default{
 //modal
     select{
         margin-right: 3vmin;
+    }
+    textarea{
+        width: 27.5vw;
+        height: 10vh;
+        border-radius: 5px;
+        outline: none;
+        padding-left: 1vmin;
     }
 </style>

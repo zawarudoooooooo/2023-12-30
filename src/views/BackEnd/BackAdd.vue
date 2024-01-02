@@ -241,9 +241,9 @@ import swal from 'sweetalert';
                 <small>* 是否必填 : {{ question.necessary}}</small>
                 
                 <div class="answer" v-for="op in question.option.split(';')">
-                    <input type="checkbox" name="" id="" v-if="question.type=='單選題'">
-                    <input type="radio" name="" id="" v-if="question.type=='多選題'">
-                    <input type="textarea" name="" id="textinput" v-if="question.type=='簡答題'" placeholder="請輸入簡答題答案">
+                    <input type="radio" name="單選題" id="" v-if="question.type=='單選題'" disabled>
+                    <input type="checkbox" name="多選題" id="" v-if="question.type=='多選題'" disabled>
+                    <input type="textarea" name="簡答題" id="textinput" v-if="question.type=='簡答題'" placeholder="請輸入簡答題答案" disabled>
                     <span>{{ op }}</span>
                 </div>
             </div>
@@ -261,6 +261,7 @@ import swal from 'sweetalert';
 <style lang="scss" scoped>
     .content{
         width: 100vw;
+        overflow: auto;
         display: flex;
         justify-content: center;
 //新增問卷
@@ -562,7 +563,7 @@ import swal from 'sweetalert';
             h6{
                 color: dimgray;
                 position: absolute;
-                right: 10%;
+                right: 20%;
                 top:0.5%
             }
             small{
