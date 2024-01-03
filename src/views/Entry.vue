@@ -14,6 +14,7 @@ export default{
             writerPhone:"",
             writerEmail:"",
             writerAge:"",
+            writerText:"",
             writerAnswer:[],
 
             //問卷顯示
@@ -63,6 +64,7 @@ export default{
     methods:{
 //抓取問卷個別頁面
         upData(index){
+            this.obj=[];
             this.arr.forEach(arr=>{
                 // console.log(arr);
                 arr.forEach((item,itemIndex)=>{  
@@ -82,6 +84,7 @@ export default{
             }
             this.upQuestionList=JSON.parse(test)
             this.upQuestionList.forEach(item=>{
+                //console.log(item.option)
                 this.obj.push(item.option.split(";"))
             })
             //console.log(this.obj);
@@ -122,48 +125,15 @@ export default{
 
             this.writerAnswer = []
 
-            //console.log(this.obj)
-            //console.log(this.upQuestionList)
-
-            this.upQuestionList.forEach(item=>{
-                //console.log(item)
-                console.log(item.option)
-                this.obj.forEach(opp=>{
-                    //console.log(item1)
-                    //console.log(this.obj)
-                    console.log(opp)
-                  
-                    if(item.option!=opp){
+            this.upQuestionList.forEach(element=>{
+                this.obj.forEach(item=>{
+                    if(element.option!=item){
                         return
                     }
-                    item.option=opp
-                    console.log(opp)
-                    //console.log(item.option)
-                    
                 })
+                element.option=element.option.split(';')
+                console.log(element)
             })
-            // this.upQuestionList.forEach(item=>{
-            //     this.obj.forEach(item1=>{
-            //         if(item.option!=item1){
-            //             return
-            //         }
-            //         console.log(obj)
-            //         console.log(item.option)
-            //     })
-            // })
-
-
-            //.upQuestionList.forEach(item=>{
-                //this.obj.forEach(obj=>{
-                    //if(item.option!=obj){
-                       // return
-                    //}
-                    //console.log(obj);
-                    //console.log(item.option);
-                    // item.option=test
-                //})
-                // console.log(item);
-            //})
 
             test.forEach((test,testIndex)=>{
                 if(test.checked){
@@ -190,38 +160,33 @@ export default{
             })
 
             test2.forEach((test2,test2Index)=>{
-                if(test2.checked){
                     this.upQuestionList.forEach((question,questionIndex)=>{
                         console.log();
                         if(question.type==='簡答題'){
-                            const optValues = Object.values(question.option);
-                            this.writerAnswer.push({qNum:questionIndex+1,optionList:[optValues[test2Index]]});
+                            this.writerAnswer.push({qNum:questionIndex+1,optionList:[this.writerText]});
                         }
                     })
-                }
             })
+
+            console.log(this.writerAnswer)
             
 
-
-
-            // axios({
-            // url:'http://localhost:8080/quiz/write',
-            // method:'POST',
-            // headers:{
-            //     'Content-Type':'application/json'
-            // },
-            // data:{
-            //     quiz_num:this.upNum,
-            //     name:this.writerName,
-            //     phone:this.writerPhone,
-            //     email:this.writerEmail,
-            //     age:this.writerAge,
-            //     answer:this.writerAnswer,
-            // },
-            // }).then(res=>{
-
-            // })
-
+            axios({
+            url:'http://localhost:8080/quiz/write',
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            data:{
+                quiz_num:this.upNum,
+                name:this.writerName,
+                phone:this.writerPhone,
+                email:this.writerEmail,
+                age:this.writerAge,
+                answer:JSON.stringify(this.writerAnswer),
+            },
+            }).then(res=>{console.log(res.data)
+            })
         },
 //抓狀態
         getStatus(startTime, endTime) {
@@ -424,10 +389,10 @@ export default{
                                     </div>
                                     <div class="mb-3">
                                             <label for="message-text" class="col-form-label">回答:</label>
-                                            <div class="answer" v-for="op in item.option.split(';')">
+                                            <div class="answer" v-for="op in (typeof item.option === 'string' ? item.option.split(';') : [])">
                                                 <input type="radio" name="單選題" id="" v-if="item.type=='單選題'" class="radio">
                                                 <input type="checkbox" name="多選題" id="" v-if="item.type=='多選題'" class="checkbox">
-                                                <textarea name="簡答題" id="textinput" v-if="item.type=='簡答題'" placeholder="請輸入簡答題答案" class="textarea"></textarea>
+                                                <textarea name="簡答題" id="textinput" v-if="item.type=='簡答題'" placeholder="請輸入簡答題答案" class="textarea" v-model="this.writerText"></textarea>
                                                 <span>{{ op }}</span>
                                             </div>
                                     </div>

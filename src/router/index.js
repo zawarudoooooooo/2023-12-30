@@ -25,22 +25,12 @@ const router = createRouter({
       component: () => import('../views/BackEnd/BackAdd.vue')
     },
     {
-      path: '/BackFeback',
-      name: 'BackFeback',
-      component: () => import('../views/BackEnd/BackFeback.vue')
+      path: '/BackResult',
+      name: 'BackResult',
+      component: () => import('../views/BackEnd/BackResult.vue')
     },
     {
-      path: '/BackCaculate',
-      name: 'BackCaculate',
-      component: () => import('../views/BackEnd/BackCaculate.vue')
-    },
-    {
-      path: '/BackAnswerFeback',
-      name: 'BackAnswerFeback',
-      component: () => import('../views/BackEnd/BackAnswerFeback.vue')
-    },
-    {
-      path: '/FrontQuestionChec',
+      path: '/FrontQuestionCheck',
       name: 'FrontQuestionCheck',
       component: () => import('../views/FrontEnd/FrontQuestionCheck.vue')
     },

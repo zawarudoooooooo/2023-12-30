@@ -17,10 +17,23 @@ export default{
             upDescription:"",
             upQuestionList:"",
 
+            //回饋頁面
+            writerNum:0,
+            writerQuizNum:"",
+            writerName:"",
+            writerPhone:"",
+            writerEmail:"",
+            writerAge:"",
+            writerAnswer:"",
+            writerDateTime:"",
+
             //頁面開關
-            //modal:false,
+            backEntryPage:true,
+            backResultPage:false,
 
             arr:[],
+            writerArr:[],
+            writerList:"",
         }
     },
     mounted(){
@@ -38,39 +51,65 @@ export default{
                 end_date : this.upEndDate,
                 questions: this.upQuestionList,
                 is_login:true,
-
-                // quiz_name:"",
-                // start_date:"",
-                // end_date:"",
-                
-            //   Object.values(this.question).map(question => question)
-                //is_published:false
             },
-        }).then(res=>{
-            this.arr.push(res.data.quizList)
-            console.log(this.arr);
+            }).then(res=>{
+                this.arr.push(res.data.quizList)
+                //console.log(this.arr);
             })
-            console.log(this.arr);
+            //console.log(this.arr);
+
+            // axios({
+            // url:'http://localhost:8080/quiz/write',
+            // method:'POST',
+            // headers:{
+            //     'Content-Type':'application/json'
+            // },
+            // data:{
+            //     quiz_num:this.writerQuizNum,
+            //     name:this.writerName,
+            //     phone:this.writerPhone,
+            //     email:this.writerEmail,
+            //     age:this.writerAge,
+            //     answer:this.writerAnswer,
+            // },
+            // }).then(res=>{
+            //     console.log(res)
+            // })
+
+
+            axios({
+            url:'http://localhost:8080/write/feback',
+            method:'POST',
+            headers:{
+                "Content-Type" : "application/json"
+            },
+            params:{
+                quizNum:this.writerQuizNum
+            },
+            data:{
+                num : this.writerNum,
+                quizNum: this.writerQuizNum,
+                name : this.writerName,
+                phone : this.writerPhone,
+                email : this.writerEmail,
+                age: this.writerAge,
+                answer: this.writerAge,
+                writeDateTime: this.writerDateTime
+            },
+            }).then(res=>{          
+                this.writerArr.push(res.data.writerList)
+                console.log(writeArr);
+            })
     },
     methods:{
-//抓取問卷個別頁面
-        upData(index){
+//問卷顯示頁面
+    upData(index){
             this.arr.forEach(arr=>{
-                // console.log(arr);
                 arr.forEach((item,itemIndex)=>{  
                     if(itemIndex!=index){
                         return
                     }
-                    //console.log(item);
-                   // console.log(item.questionList)
-
                 let test=item.questionList
-                //console.log(test)
-                // item.num=this.upNum
-                // item.name=this.upName
-                // item.description=this.upDescription
-                // item.startDate=this.upStartDate
-                // item.endDate=this.upEndDate
 
                 this.upNum=item.num
                 this.upName=item.name
@@ -82,9 +121,7 @@ export default{
                 this.upQuestionList=""
             }
             this.upQuestionList=JSON.parse(test)
-            // console.log(this.upName);
             console.log(this.upQuestionList);
-          // console.log(item.questionStr);
             })
         })
     },
@@ -101,8 +138,6 @@ export default{
                 start_date:this.startDate,
                 end_date:this.endDate,
                 is_login:true,
-            //   Object.values(this.question).map(question => question)
-                //is_published:false
             },
             }).then(res=>{
                 if(this.arr.length!=0){
@@ -111,7 +146,6 @@ export default{
                     this.name=""
                     this.startDate=""
                     this.endDate=""
-                    //console.log(res.data)
                     return
                 }
             })
@@ -207,19 +241,65 @@ export default{
                 return true;
             }
         },
-//頁面
+//問卷回饋
+        goResult(){
+            this.arr.forEach(arr=>{
+                arr.forEach(item=>{
+                    this.writerQuizNum=item.num
+                })
+            // //     arr.forEach((item,itemIndex)=>{  
+            // //     //     if(itemIndex!=index){
+            // //     //         return
+            // //     //     }
+            // //     // let test=item.questionList
+
+            // //     this.writeQuizNum=item.num
+            // //     // this.upName=item.name
+            // //     // this.upDescription=item.description
+            // //     // this.upStartDate=item.startDate
+            // //     // this.upEndDate=item.endDate
+
+            // //     // if(this.upQuestionList!=""){
+            // //     //     this.upQuestionList=""
+            // //     // }
+            // //     // this.upQuestionList=JSON.parse(test)
+            // // //console.log(this.upQuestionList);
+            // //     })
+            })
+            
+            axios({
+            url:'http://localhost:8080/write/feback',
+            method:'POST',
+            headers:{
+                "Content-Type" : "application/json"
+            },
+            params:{
+                quizNum:this.writerQuizNum
+            },
+            data:{
+                num : this.writerNum,
+                quizNum: this.writerQuizNum,
+                name : this.writerName,
+                phone : this.writerPhone,
+                email : this.writerEmail,
+                age: this.writerAge,
+                answer: this.writerAnswer,
+                writeDateTime: this.writerDateTime
+            },
+            }).then(res=>{          
+                //this.writeArr.push(res)
+                console.log(res);
+            })
+            this.backEntryPage=false,
+            this.backResultPage=true
+        },
+//路由
         goAddQuiz(){
             this.$router.push('BackAdd')
         },
-        goFeback(){
-            this.$router.push('/BackFeback')
-        },
-        goBackCaculate(){
-            this.$router.push('/BackCaculate')
-        },
-        gobackQuestion(){
-            this.backEntryPage=false;
-            this.backQuestionPage=true;
+        goBackEntry(){
+            this.backResultPage=false,
+            this.backEntryPage=true
         },
     }
 }
@@ -227,16 +307,16 @@ export default{
 
 <template>
     <div class="content">
-        <!-- 後台入口頁面 -->
-        <div class="backEntry">
-<!-- 標題模糊搜尋 -->
+<!-- 後台入口頁面 -->
+        <div class="backEntry" v-if="backEntryPage">
+            <!-- 標題模糊搜尋 -->
             <div class="searchArea">
-<!-- 問卷名稱 -->
+            <!-- 問卷名稱 -->
                 <div class="questionnaire">
                     <p>問卷名稱 : </p>
                     <input type="text" v-model="this.name">
                 </div>
-<!-- 開始/結束時間 -->
+                <!-- 開始/結束時間 -->
                 <div class="time">
                     <p>開始時間 : </p>
                     <input type="date" v-model="this.startDate">
@@ -245,13 +325,11 @@ export default{
                     <button type="button" @click="search()">搜尋</button>            
                 </div>
             </div>
-<!-- icon區域 -->
+            <!-- icon區域 -->
             <div class="iconArea">
                 <i class="fa-solid fa-plus" @click="goAddQuiz()"></i>
-                <i class="fa-solid fa-comments" @click="goFeback()"></i>
-                <i class="fa-solid fa-chart-simple" @click="goBackCaculate()"></i>
             </div>
-<!-- 列表顯示 -->
+            <!-- 列表顯示 -->
             <table>
                 <tr>
                     <th>編號</th>
@@ -262,10 +340,9 @@ export default{
                     <th>結果</th>
                     <th>刪除</th>
                 </tr>
-
                 <tbody v-for="item in this.arr">
                     <tr  v-for="(item1,index) in item">
-                        <td>{{index+1}}</td>
+                        <td>{{item1.num}}</td>
                         <td>
                             <button type="button" @click="upData(index)" class="btn" data-bs-toggle="modal" 
                                     data-bs-target="#exampleModal">{{ item1.name }}
@@ -278,11 +355,42 @@ export default{
                         </td>
                         <td>{{ item1.startDate }}</td>
                         <td>{{ item1.endDate }}</td>
-                        <td>前往</td>
+                        <td @click="goResult(index)">前往</td>
                         <td><i class="fa-solid fa-trash-can" @click="deleteQuiz(item1.num)"></i></td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+<!-- 問卷結果顯示 -->
+        <div class="result" v-if="backResultPage">
+            <!-- icon區域 -->
+            <div class="iconArea">
+                <i class="fa-solid fa-comments" @click="getFeback()">回饋</i>
+                <i class="fa-solid fa-chart-pie">統計</i>
+            </div>
+            <div class="feback">
+                <table>
+                    <tr>
+                        <th>編號</th>
+                        <th>姓名</th>
+                        <th>填寫時間</th>
+                        <th>觀看回覆</th>
+                    </tr>
+                    <tr>
+                        <th>{{ this.writerNum }}</th>
+                        <th>{{ this.writerName }}</th>
+                        <th>{{ this.writerDateTime }}</th>
+                        <th></th>
+                    </tr>
+                </table>
+            </div>
+            <div class="caculate">
+            </div>
+
+            <!-- 按鍵區域 -->
+            <div class="buttonArea">
+                <button type="button" @click="goBackEntry()">返回</button>
+            </div>
         </div>
     </div>
 
@@ -347,7 +455,7 @@ export default{
 <style lang="scss" scoped>
     .content{
         margin-top: 10vmin;
-//後台入口頁面
+//後台入口
         .backEntry{
         //標題模糊搜尋
             .searchArea{
@@ -458,6 +566,43 @@ export default{
                     td{
                         color: dimgray;
                         border: 2px solid #9D9D9D;
+                    }
+                }
+            }
+        }
+//問卷結果
+        .result{
+            .iconArea{
+                text-align: center;
+                i{
+                    color: #9D9D9D;
+                    font-size: 24pt;;
+                    margin-right: 10vmin;
+                    &:hover{
+                        color: lightslategray;
+                    }
+                    &:active{
+                        color: #9D9D9D;
+                    }
+                }
+            }
+            .buttonArea{
+                button{
+                    width: 9vw;
+                    height: 4vh;
+                    color: dimgray;
+                    margin-left: 2vmin;
+                    border-style: none;
+                    border-radius: 5px;
+                    background-color: #F8F0DF;
+                    box-shadow: 1px 1px 1px lightgray;
+                    &:hover{
+                        color: #F8F0DF;
+                        background-color: #9D9D9D;
+                    }
+                    &:active{
+                        color: dimgray;
+                        background-color: #F8F0DF;
                     }
                 }
             }
