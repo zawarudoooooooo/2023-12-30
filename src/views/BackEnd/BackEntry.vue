@@ -1,5 +1,26 @@
 <script>
 import axios from 'axios';
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { PieChart } from 'echarts/charts';
+import {
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+} from 'echarts/components';
+import VChart, { THEME_KEY } from 'vue-echarts';
+import { ref, provide } from 'vue';
+import Chart from 'chart.js/auto';
+
+// use([
+//     CanvasRenderer,
+//     PieChart,
+//     TitleComponent,
+//     TooltipComponent,
+//     LegendComponent,
+// ]);
+
+
 export default{
     data(){
         return{
@@ -26,14 +47,26 @@ export default{
             writerAge:"",
             writerAnswer:"",
             writerDateTime:"",
+            writerArr:[],
+            writerInfoArr:[],
+            WriterAnswer:[],
+
+
+            //圓餅圖變數
+            countArr:[],
 
             //頁面開關
             backEntryPage:true,
             backResultPage:false,
 
             arr:[],
-            writerArr:[],
-            writerList:"",
+            //writerList:"",
+
+            chartDataList: [],
+            labelForAns: [], ////到時候要棄用
+            responseData: null,
+            processedUserData: null,
+            userList: null
         }
     },
     mounted(){
@@ -53,60 +86,16 @@ export default{
                 is_login:true,
             },
             }).then(res=>{
-                this.arr.push(res.data.quizList)
+                this.arr=res.data.quizList
                 //console.log(this.arr);
-            })
-            //console.log(this.arr);
-
-            // axios({
-            // url:'http://localhost:8080/quiz/write',
-            // method:'POST',
-            // headers:{
-            //     'Content-Type':'application/json'
-            // },
-            // data:{
-            //     quiz_num:this.writerQuizNum,
-            //     name:this.writerName,
-            //     phone:this.writerPhone,
-            //     email:this.writerEmail,
-            //     age:this.writerAge,
-            //     answer:this.writerAnswer,
-            // },
-            // }).then(res=>{
-            //     console.log(res)
-            // })
-
-
-            axios({
-            url:'http://localhost:8080/write/feback',
-            method:'POST',
-            headers:{
-                "Content-Type" : "application/json"
-            },
-            params:{
-                quizNum:this.writerQuizNum
-            },
-            data:{
-                num : this.writerNum,
-                quizNum: this.writerQuizNum,
-                name : this.writerName,
-                phone : this.writerPhone,
-                email : this.writerEmail,
-                age: this.writerAge,
-                answer: this.writerAge,
-                writeDateTime: this.writerDateTime
-            },
-            }).then(res=>{          
-                this.writerArr.push(res.data.writerList)
-                console.log(writeArr);
             })
     },
     methods:{
-//問卷顯示頁面
-    upData(index){
-            this.arr.forEach(arr=>{
-                arr.forEach((item,itemIndex)=>{  
-                    if(itemIndex!=index){
+//問卷後台頁面
+    //問卷顯示頁面
+        upData(index){
+            this.arr.forEach((item,itemIndex)=>{  
+            if(itemIndex!=index){
                         return
                     }
                 let test=item.questionList
@@ -123,10 +112,9 @@ export default{
             this.upQuestionList=JSON.parse(test)
             console.log(this.upQuestionList);
             })
-        })
-    },
-//搜尋問卷
-    search(){
+        },
+    //搜尋問卷
+        search(){
             axios({
             url:'http://localhost:8080/quiz/search',
             method:'POST',
@@ -150,7 +138,7 @@ export default{
                 }
             })
         },
-//刪除問卷
+    //刪除問卷
         deleteQuiz(num){
             axios({
                 url:'http://localhost:8080/quiz/delete',
@@ -165,7 +153,7 @@ export default{
                 this.search()
             })
         },
-//編輯問卷(只有未發布可更改)
+    //編輯問卷(只有未發布可更改)
         edit(){
             axios({
                 url:'http://localhost:8080/quiz/update',
@@ -188,7 +176,7 @@ export default{
                 console.log(res.data)
             })
         },
-//抓狀態
+    //抓狀態
         getStatus(startTime, endTime) {
             const now = new Date();
             const startDate = new Date(startTime);
@@ -202,7 +190,7 @@ export default{
                 return '已結束';
             }
         },
-//狀態顯示顏色
+    //狀態顯示顏色
         getStatusColor(startTime, endTime) {
             const status = this.getStatus(startTime, endTime);
 
@@ -241,32 +229,11 @@ export default{
                 return true;
             }
         },
-//問卷回饋
-        goResult(){
-            this.arr.forEach(arr=>{
-                arr.forEach(item=>{
-                    this.writerQuizNum=item.num
-                })
-            // //     arr.forEach((item,itemIndex)=>{  
-            // //     //     if(itemIndex!=index){
-            // //     //         return
-            // //     //     }
-            // //     // let test=item.questionList
 
-            // //     this.writeQuizNum=item.num
-            // //     // this.upName=item.name
-            // //     // this.upDescription=item.description
-            // //     // this.upStartDate=item.startDate
-            // //     // this.upEndDate=item.endDate
-
-            // //     // if(this.upQuestionList!=""){
-            // //     //     this.upQuestionList=""
-            // //     // }
-            // //     // this.upQuestionList=JSON.parse(test)
-            // // //console.log(this.upQuestionList);
-            // //     })
-            })
-            
+//問卷後台回饋
+    //問卷回饋
+        goResult(index){
+            //console.log(index);
             axios({
             url:'http://localhost:8080/write/feback',
             method:'POST',
@@ -274,24 +241,49 @@ export default{
                 "Content-Type" : "application/json"
             },
             params:{
-                quizNum:this.writerQuizNum
+                quizNum:index
             },
-            data:{
-                num : this.writerNum,
-                quizNum: this.writerQuizNum,
-                name : this.writerName,
-                phone : this.writerPhone,
-                email : this.writerEmail,
-                age: this.writerAge,
-                answer: this.writerAnswer,
-                writeDateTime: this.writerDateTime
-            },
-            }).then(res=>{          
-                //this.writeArr.push(res)
-                console.log(res);
+            }).then(res=>{
+                //let dayTime=new Date(res.data.writerList.writeDateTime)
+                //let time= dayTime.getFullYear()+"-"+(dayTime.getMonth()+1)+"-"+dayTime.getDate()+" "+dayTime.getHours()+":"+"0"+dayTime.getMinutes()
+                //console.log(time)
+                this.writerArr=res.data.writerList
+                //console.log(this.writerArr)
             })
             this.backEntryPage=false,
-            this.backResultPage=true
+            this.backResultPage=true,
+            this.backFebackPage=true
+            this.count(index);
+        },
+    //填寫者個別顯示頁面
+        writer(index){
+            //console.log(this.writerArr)
+            this.writerArr.forEach((item,itemIndex)=>{
+                if(itemIndex!=index){
+                    return
+                }
+                this.writerInfoArr=item
+                //console.log(this.writerInfoArr.answer)
+                this.writerAnswer=this.writerInfoArr.answer
+                //console.log(this.writerAnswer)
+            })
+        },
+    //統計圖表
+        count(index){
+            axios({
+            url:'http://localhost:8080/write/count',
+            method:'POST',
+            headers:{
+                "Content-Type" : "application/json"
+            },
+            params:{
+                quizNum:index
+            },
+            }).then(res=>{
+                this.countArr=res
+                //console.log(res)
+                console.log(this.countArr)
+            })
         },
 //路由
         goAddQuiz(){
@@ -301,7 +293,60 @@ export default{
             this.backResultPage=false,
             this.backEntryPage=true
         },
-    }
+    },
+    components:{
+        //VChart,
+    },
+    // setup(){
+    //     provide(THEME_KEY, 'light');
+
+    //     const option = ref({
+    //     title: {
+    //         text:'問卷名稱',
+    //         left: 'center',
+    //     },
+    //     tooltip: {
+    //         trigger: 'item',
+    //         formatter: '{a} <br/>{b} : {c} ({d}%)',
+    //     },
+    //     // legend: {
+    //     //     orient: 'vertical',
+    //     //     left: 'center',
+    //     //     data: [
+    //     //         'Direct', 
+    //     //         'Email', 
+    //     //         'Ad Networks', 
+    //     //         'Video Ads', 
+    //     //         'Search Engines'
+    //     //     ],
+    //     // },
+    //     series: [
+    //         {
+    //             type: 'pie',
+    //             radius: '55%',
+    //             center: ['50%', '60%'],
+    //             data: [
+    //                 { value: 335, name: 'Direct' },
+    //                 // { value: 310, name: 'Email' },
+    //                 // { value: 234, name: 'Ad Networks' },
+    //                 // { value: 135, name: 'Video Ads' },
+    //                 // { value: 1548, name: 'Search Engines' },
+    //             ],
+    //             emphasis: {
+    //                 itemStyle: {
+    //                     shadowBlur: 10,
+    //                     shadowOffsetX: 0,
+    //                     shadowColor: 'rgba(0, 0, 0, 0.5)',
+    //                 },
+    //             },
+    //         },
+    //     ],
+    // });
+    //     return{
+    //         option,
+    //         provide
+    //     }
+    // },
 }
 </script>
 
@@ -340,23 +385,23 @@ export default{
                     <th>結果</th>
                     <th>刪除</th>
                 </tr>
-                <tbody v-for="item in this.arr">
-                    <tr  v-for="(item1,index) in item">
-                        <td>{{item1.num}}</td>
+                <tbody>
+                    <tr  v-for="(item,index) in this.arr">
+                        <td>{{item.num}}</td>
                         <td>
                             <button type="button" @click="upData(index)" class="btn" data-bs-toggle="modal" 
-                                    data-bs-target="#exampleModal">{{ item1.name }}
+                                    data-bs-target="#exampleModal">{{ item.name }}
                             </button>
                         </td>
                         <td>
-                            <span :style="{ color: getStatusColor(item1.startDate, item1.endDate) }">
-                                {{ getStatus(item1.startDate, item1.endDate) }}
+                            <span :style="{ color: getStatusColor(item.startDate, item.endDate) }">
+                                {{ getStatus(item.startDate, item.endDate) }}
                             </span>
                         </td>
-                        <td>{{ item1.startDate }}</td>
-                        <td>{{ item1.endDate }}</td>
-                        <td @click="goResult(index)">前往</td>
-                        <td><i class="fa-solid fa-trash-can" @click="deleteQuiz(item1.num)"></i></td>
+                        <td>{{ item.startDate }}</td>
+                        <td>{{ item.endDate }}</td>
+                        <td @click="goResult(item.num)">前往</td>
+                        <td><i class="fa-solid fa-trash-can" @click="deleteQuiz(item.num)"></i></td>
                     </tr>
                 </tbody>
             </table>
@@ -365,8 +410,7 @@ export default{
         <div class="result" v-if="backResultPage">
             <!-- icon區域 -->
             <div class="iconArea">
-                <i class="fa-solid fa-comments" @click="getFeback()">回饋</i>
-                <i class="fa-solid fa-chart-pie">統計</i>
+                <i class="fa-solid fa-chart-pie">回饋和統計</i>
             </div>
             <div class="feback">
                 <table>
@@ -374,19 +418,21 @@ export default{
                         <th>編號</th>
                         <th>姓名</th>
                         <th>填寫時間</th>
-                        <th>觀看回覆</th>
+                        <th>回覆</th>
                     </tr>
-                    <tr>
-                        <th>{{ this.writerNum }}</th>
-                        <th>{{ this.writerName }}</th>
-                        <th>{{ this.writerDateTime }}</th>
-                        <th></th>
+                    <tr v-for="(item,index) in this.writerArr">
+                        <td>{{ item.num }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.writeDateTime }}</td>
+                        <td  @click="writer(index)" data-bs-toggle="modal" 
+                                    data-bs-target="#exampleModal1">觀看
+                        </td>
                     </tr>
                 </table>
             </div>
             <div class="caculate">
+                <!-- <v-chart class="chart" :option="option" autoresize  /> -->
             </div>
-
             <!-- 按鍵區域 -->
             <div class="buttonArea">
                 <button type="button" @click="goBackEntry()">返回</button>
@@ -394,7 +440,7 @@ export default{
         </div>
     </div>
 
-<!-- Modal -->
+<!-- 編輯問卷Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -437,15 +483,108 @@ export default{
                                         <span>必填</span>
                                     </div>
                                     <div class="mb-3">
-                                            <label for="message-text" class="col-form-label">選項 ( 請以 ; 分隔 ) :</label>
-                                            <textarea v-model="item.option" class="form-control" id="message-text"></textarea>
+                                        <label for="message-text" class="col-form-label">選項 ( 請以 ; 分隔 ) :</label>
+                                        <textarea v-model="item.option" class="form-control" id="message-text"></textarea>
                                     </div>
                                     <hr>
                                 </div>
                         </form>
                     </div>
-                    <div class="modal-footer" v-for="item in arr">
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal" @click="edit()">確認修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!-- 回饋顯示Modal -->
+        <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">回饋內容</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <!-- 問卷資訊 -->
+                            <!-- <div class="quizInfo" v-for="(item,index) in this.arr" key="index">
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">問卷名稱 :</label>
+                                    <p>{{ item.name }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message-text" class="col-form-label">問卷說明 :</label>
+                                    <p>{{ item.description }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">開始時間 :</label>
+                                    <p>{{ item.startDate }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message-text" class="col-form-label">結束時間 :</label>
+                                    <p>{{ item.endDate }}</p>
+                                </div>
+                            </div> -->
+                        <!-- 填答者資訊 -->
+                            <div class="writerInfo">
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">姓名 : </label>
+                                    <p>{{ this.writerInfoArr.name }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">手機 : </label>
+                                    <p>{{ this.writerInfoArr.phone }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">Email : </label>
+                                    <p>{{ this.writerInfoArr.email }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">年齡 : </label>
+                                    <p>{{ this.writerInfoArr.age }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">回答 : </label>
+                                    <p>{{ this.writerInfoArr.answer }}</p>
+                                </div>
+
+                            </div>
+
+                        <!-- 題目和回答 -->
+                            <!-- <div class="writerAnswer">
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">回答 : </label>
+                                    <p>{{ this.writerAnswer.qNum }}</p>
+                                </div>
+
+                            </div>
+                            <div class="queiont" v-for="(item,index) in this.upQuestionList">
+                                <div class="num">第{{ index+1 }}題</div>
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">問題名稱 :</label>
+                                        <p>{{ item.title }}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <select v-model="item.type" name="" id="" disabled>
+                                            <option value="">請選擇</option>
+                                            <option value="單選題">單選題</option>
+                                            <option value="多選題">多選題</option>
+                                            <option value="簡答題">簡答題</option>
+                                        </select>
+                                        <input type="checkbox" class="chBox" name="necessary" value="true" v-model="item.necessary" id="" disabled>
+                                        <span>必填</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="message-text" class="col-form-label" v-for="(item,index) in this.writerArr">回答 :</label>
+                                        <p>{{ item.optionList }}</p>
+                                    </div>
+                                    <hr>
+                                </div> -->
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">關閉</button>
                     </div>
                 </div>
             </div>
@@ -577,7 +716,6 @@ export default{
                 i{
                     color: #9D9D9D;
                     font-size: 24pt;;
-                    margin-right: 10vmin;
                     &:hover{
                         color: lightslategray;
                     }
@@ -586,12 +724,33 @@ export default{
                     }
                 }
             }
+            //列表顯示
+            table{
+                width: 45vw;
+                margin: auto;
+                margin-top: 3vmin;
+                text-align: center;
+                margin-bottom: 5vmin;
+                tr{
+                    th{
+                        color: dimgray;
+                        border: 2px solid #9D9D9D;
+                    }
+                    td{
+                        color: dimgray;
+                        border: 2px solid #9D9D9D;
+                    }
+                }
+            }
             .buttonArea{
+                width: 10vw;
+                margin: auto;
+                margin-top: 3vmin;
                 button{
                     width: 9vw;
                     height: 4vh;
                     color: dimgray;
-                    margin-left: 2vmin;
+                    //margin-left: 2vmin;
                     border-style: none;
                     border-radius: 5px;
                     background-color: #F8F0DF;
@@ -618,5 +777,8 @@ export default{
         border-radius: 5px;
         outline: none;
         padding-left: 1vmin;
+    }
+    .chart{
+        height: 60vh;
     }
 </style>
