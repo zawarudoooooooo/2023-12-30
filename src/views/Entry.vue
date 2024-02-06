@@ -104,7 +104,7 @@ export default{
                 quiz_name:this.name,
                 start_date:this.startDate,
                 end_date:this.endDate,
-                is_login:true,
+                is_login:false,
             },
             }).then(res=>{
                 if(this.arr.length!=0){

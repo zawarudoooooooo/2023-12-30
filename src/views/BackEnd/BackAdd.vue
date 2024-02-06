@@ -390,6 +390,7 @@ import swal from 'sweetalert';
                 justify-content: space-around;
                 align-items: center;
                 display: flex;
+                margin-bottom: 3vmin;
                 button{
                     width: 9vw;
                     height: 4vh;
@@ -589,7 +590,7 @@ import swal from 'sweetalert';
             margin: auto;
             text-align: center;
             margin-top: 5vmin;
-
+            margin-bottom: 3vmin;
             button{
                 width: 8vw;
                 height: 4vh;

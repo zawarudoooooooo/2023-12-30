@@ -40,7 +40,7 @@ import swal from 'sweetalert';
 <!-- 目前位置標示 -->
             <div class="location">
                 <i class="fa-solid fa-thumbtack"></i>
-                <p>後台登錄</p>
+                <p>後台登入</p>
             </div>
             <div class="account">
                 <p>帳號</p>

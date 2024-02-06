@@ -697,6 +697,7 @@ export default{
                 margin: auto;
                 margin-top: 3vmin;
                 text-align: center;
+                margin-bottom: 3vmin;
                 tr{
                     th{
                         color: dimgray;
